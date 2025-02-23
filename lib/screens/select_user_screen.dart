@@ -32,9 +32,11 @@ class _SelectUserScreenState extends State<SelectUserScreen> {
         client.devToken(user.id).rawValue,
       );
 
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(
+              builder: (context) => HomeScreen()
+            )
+          );
     } on Exception catch (e) {
       logger.e(e);
       setState(() {

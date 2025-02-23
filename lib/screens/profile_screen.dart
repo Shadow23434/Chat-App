@@ -1,3 +1,4 @@
+import 'package:chat_app/screens/screens.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
@@ -51,7 +52,7 @@ class ProfileScreen extends StatelessWidget {
 }
 
 class _SignOutButton extends StatefulWidget{
-  const _SignOutButton({super.key});
+  const _SignOutButton();
 
   @override
   __SignOutButtonState createState() =>
@@ -69,8 +70,8 @@ class __SignOutButtonState extends State<_SignOutButton>{
       final nav = Navigator.of(context);
       await StreamChatCore.of(context).client.disconnectUser();
       //firebase
-      // nav.pushReplacement(SplashScreen.route);
-    } on Exception catch (e, st) {
+      nav.pushReplacement(SelectUserScreen.route);
+    } on Exception catch (e) {
       logger.e(e);
       setState(() {
         _loading = false;

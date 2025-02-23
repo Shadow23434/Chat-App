@@ -3,20 +3,19 @@ import 'package:chat_app/app.dart';
 import 'package:flutter/material.dart';
 
 class Avatar extends StatelessWidget {
-  const Avatar({Key? key, this.url, this.onTap, required this.radius})
-  : super(key: key);
+  const Avatar({super.key, this.url, this.onTap, required this.radius});
 
   const Avatar.small({
-    Key? key, this.url, this.onTap
-  }) : radius = 18, super(key: key);
+    super.key, this.url, this.onTap
+  }) : radius = 18;
 
   const Avatar.medium({
-    Key? key, this.url, this.onTap
-  }) : radius = 26, super(key: key);
+    super.key, this.url, this.onTap
+  }) : radius = 26;
 
   const Avatar.large({
-    Key? key, this.url, this.onTap
-  }) : radius = 34, super(key: key);
+    super.key, this.url, this.onTap
+  }) : radius = 34;
 
   final String? url;
   final VoidCallback? onTap;

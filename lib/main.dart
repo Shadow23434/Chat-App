@@ -1,9 +1,9 @@
-import 'package:chat_app/screens/select_user_screen.dart';
 import 'package:chat_app/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 
 import 'app.dart';
+import 'screens/select_user_screen.dart';
 
 void main() {
   final client = StreamChatClient(streamKey);
@@ -21,10 +21,12 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system,
-      builder: (context, child) {
-        return StreamChatCore(client: client, child: child!);
-      },
       title: "Chat App",
+      builder: (context, child) =>
+         StreamChatCore(
+            client: client,
+            child: child!,
+        ),
       home: SelectUserScreen(),
     );
   }

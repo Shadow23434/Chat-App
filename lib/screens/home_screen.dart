@@ -1,14 +1,13 @@
 import 'package:chat_app/app.dart';
-import 'package:chat_app/pages/calls_page.dart';
-import 'package:chat_app/pages/contacts_page.dart';
-import 'package:chat_app/pages/messages_page.dart';
-import 'package:chat_app/pages/notifications_page.dart';
-import 'package:chat_app/screens/profile_screen.dart';
+import 'package:chat_app/screens/screens.dart';
 import 'package:chat_app/theme.dart';
-import 'package:chat_app/widgets/glowing_action_button.dart';
-import 'package:chat_app/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../pages/calls_page.dart';
+import '../pages/contacts_page.dart';
+import '../pages/messages_page.dart';
+import '../pages/notifications_page.dart';
+import '../widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -57,7 +56,7 @@ class HomeScreen extends StatelessWidget {
           child: IconBackGround(
             icon: Icons.search,
             onTap: () {
-              print('Searching!');
+              // print('Searching!');
             },
           ),
         ),
@@ -122,14 +121,14 @@ class _BottomNavigationBarState extends State<__BottomNavigationBar> {
             children: [
               _NavigationBarItem(
                 index: 0,
-                lable: 'Messages',
+                label: 'Messages',
                 icon: CupertinoIcons.bubble_left_bubble_right_fill,
                 isSelected: (selectedIndex == 0),
                 onTap: handleItemSelected,
               ),
               _NavigationBarItem(
                 index: 1,
-                lable: 'Notifications',
+                label: 'Notifications',
                 icon: CupertinoIcons.bell_solid,
                 isSelected: (selectedIndex == 1),
                 onTap: handleItemSelected,
@@ -137,18 +136,28 @@ class _BottomNavigationBarState extends State<__BottomNavigationBar> {
               GlowingActionButton(
                 color: AppColors.secondary,
                 icon: CupertinoIcons.add,
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) => const Dialog(
+                        child: AspectRatio(
+                          aspectRatio: 8/7,
+                          child: ContactsPage(),
+                        ),
+                      )
+                  );
+                },
               ),
               _NavigationBarItem(
                 index: 2,
-                lable: 'Calls',
+                label: 'Calls',
                 icon: CupertinoIcons.phone_fill,
                 isSelected: (selectedIndex == 2),
                 onTap: handleItemSelected,
               ),
               _NavigationBarItem(
                 index: 3,
-                lable: 'Contacts',
+                label: 'Contacts',
                 icon: CupertinoIcons.person_2_fill,
                 isSelected: (selectedIndex == 3),
                 onTap: handleItemSelected,
@@ -164,14 +173,14 @@ class _BottomNavigationBarState extends State<__BottomNavigationBar> {
 class _NavigationBarItem extends StatelessWidget {
   const _NavigationBarItem({
     required this.index,
-    required this.lable,
+    required this.label,
     required this.icon,
     this.isSelected = false,
     required this.onTap,
   });
 
   final int index;
-  final String lable;
+  final String label;
   final IconData icon;
   final bool isSelected;
   final ValueChanged<int> onTap;
@@ -198,7 +207,7 @@ class _NavigationBarItem extends StatelessWidget {
             ),
             // SizedBox(height: 8),
             // Text(
-            //   lable,
+            //   label,
             //   style:
             //       isSelected
             //           ? const TextStyle(
