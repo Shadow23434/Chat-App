@@ -17,9 +17,6 @@ class ProfileScreen extends StatelessWidget {
     final user = context.currentUser;
     return Scaffold(
       appBar: AppBar(
-        iconTheme: Theme.of(context).iconTheme,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         leadingWidth: 54,
         leading: Align(
           alignment: Alignment.centerRight,
@@ -51,15 +48,14 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class _SignOutButton extends StatefulWidget{
+class _SignOutButton extends StatefulWidget {
   const _SignOutButton();
 
   @override
-  __SignOutButtonState createState() =>
-      __SignOutButtonState();
+  __SignOutButtonState createState() => __SignOutButtonState();
 }
 
-class __SignOutButtonState extends State<_SignOutButton>{
+class __SignOutButtonState extends State<_SignOutButton> {
   bool _loading = false;
 
   Future<void> _signOut() async {
@@ -82,15 +78,13 @@ class __SignOutButtonState extends State<_SignOutButton>{
   @override
   Widget build(BuildContext context) {
     return _loading
-      ? const CircularProgressIndicator(color: AppColors.secondary,)
-      : TextButton(
-        onPressed: _signOut,
-      child: const Text(
-        'Sign out',
-        style: TextStyle(
-          color: AppColors.secondary,
-        ),
-      ),
-    );
+        ? const CircularProgressIndicator(color: AppColors.secondary)
+        : TextButton(
+          onPressed: _signOut,
+          child: const Text(
+            'Sign out',
+            style: TextStyle(color: AppColors.secondary),
+          ),
+        );
   }
 }

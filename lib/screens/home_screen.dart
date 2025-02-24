@@ -33,9 +33,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: Theme.of(context).iconTheme,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         title: ValueListenableBuilder(
           valueListenable: title,
           builder: (BuildContext context, String value, _) {
@@ -64,10 +61,11 @@ class HomeScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 24.0),
             child: Avatar.small(
-                url: context.currentUserImage ?? defaultAvatarUrl,
-                onTap: () {
-                  Navigator.of(context).push(ProfileScreen.route);
-                }),
+              url: context.currentUserImage ?? defaultAvatarUrl,
+              onTap: () {
+                Navigator.of(context).push(ProfileScreen.route);
+              },
+            ),
           ),
         ],
       ),
@@ -138,13 +136,14 @@ class _BottomNavigationBarState extends State<__BottomNavigationBar> {
                 icon: CupertinoIcons.add,
                 onPressed: () {
                   showDialog(
-                      context: context,
-                      builder: (BuildContext context) => const Dialog(
-                        child: AspectRatio(
-                          aspectRatio: 8/7,
-                          child: ContactsPage(),
+                    context: context,
+                    builder:
+                        (BuildContext context) => const Dialog(
+                          child: AspectRatio(
+                            aspectRatio: 8 / 7,
+                            child: ContactsPage(),
+                          ),
                         ),
-                      )
                   );
                 },
               ),

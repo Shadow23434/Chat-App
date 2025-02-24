@@ -5,19 +5,18 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:chat_app/app.dart';
 import 'package:chat_app/main.dart';
+import 'package:chat_app/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    final client = StreamChatClient('API_KEY');
-    await tester.pumpWidget(MyApp(
-      client: client
-    ));
+    final client = StreamChatClient(streamKey);
+    await tester.pumpWidget(MyApp(client: client, appTheme: AppTheme()));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
