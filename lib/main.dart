@@ -4,7 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 import 'app.dart';
-import 'screens/select_user_screen.dart';
+import 'screens/screens.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,11 +24,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: appTheme.light,
       darkTheme: appTheme.dark,
-      themeMode: ThemeMode.light,
+      themeMode: ThemeMode.system,
       title: "Chat App",
       builder:
           (context, child) => StreamChatCore(client: client, child: child!),
-      home: SelectUserScreen(),
+      home: SplashScreen(),
     );
   }
 }

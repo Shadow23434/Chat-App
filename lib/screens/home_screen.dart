@@ -10,6 +10,8 @@ import '../pages/notifications_page.dart';
 import '../widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
+  static Route get route =>
+      MaterialPageRoute(builder: (context) => HomeScreen());
   HomeScreen({super.key});
 
   final ValueNotifier<int> pageIndex = ValueNotifier(0);

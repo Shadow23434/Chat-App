@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 
+import 'app.dart';
+
 abstract class Helpers {
   static final random = Random();
 
@@ -46,6 +48,33 @@ abstract class Helpers {
       }
     } else {
       return null;
+    }
+    return null;
+  }
+
+  static String? nameInputValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Cannot be empty!';
+    }
+    return null;
+  }
+
+  static String? emailInputValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Cannot be empty!';
+    }
+    if (!emailRegex.hasMatch(value)) {
+      return 'Invalid email address';
+    }
+    return null;
+  }
+
+  static String? passwordInputValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Cannot be empty!';
+    }
+    if (value.length < 8) {
+      return 'Must be at least 8 characters';
     }
     return null;
   }

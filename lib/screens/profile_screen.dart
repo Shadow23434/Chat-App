@@ -17,11 +17,10 @@ class ProfileScreen extends StatelessWidget {
     final user = context.currentUser;
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 54,
-        leading: Align(
-          alignment: Alignment.centerRight,
-          child: IconBackGround(
-            icon: CupertinoIcons.back,
+        leading: Padding(
+          padding: const EdgeInsets.only(top: 20, left: 20),
+          child: IconNoBorder(
+            icon: Icons.arrow_back_ios_rounded,
             onTap: () {
               Navigator.of(context).pop();
             },
