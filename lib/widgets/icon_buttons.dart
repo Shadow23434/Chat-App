@@ -116,10 +116,19 @@ class IconImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Image.asset(src, width: 32, height: 32),
+    return Container(
+      height: 40,
+      width: 40,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+      // clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: Image.asset(src),
+        ),
+      ),
     );
   }
 }

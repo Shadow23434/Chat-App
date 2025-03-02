@@ -1,16 +1,13 @@
+import 'package:chat_app/auth/auth_service.dart';
 import 'package:chat_app/screens/forgot_password_screen.dart';
 import 'package:chat_app/screens/home_screen.dart';
 import 'package:chat_app/screens/sign_up_screen.dart';
 import 'package:chat_app/theme.dart';
-import 'package:chat_app/widgets/header.dart';
-import 'package:chat_app/widgets/icon_buttons.dart';
-import 'package:chat_app/widgets/input_form.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
-
 import '../app.dart';
+import '../widgets/widgets.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 class LogInScreen extends StatefulWidget {
   static Route get route =>
@@ -23,15 +20,13 @@ class LogInScreen extends StatefulWidget {
 }
 
 class _LogInScreenState extends State<LogInScreen> {
-  final auth = firebase.FirebaseAuth.instance;
-  final functions = FirebaseFunctions.instance;
-
   final _emailFormKey = GlobalKey<FormState>();
   final _passwordFormKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _loading = false;
   bool _showErrors = false;
+  final authService = AuthService();
 
   Future<void> _logIn() async {
     setState(() {
@@ -44,37 +39,39 @@ class _LogInScreenState extends State<LogInScreen> {
         _loading = true;
       });
       try {
-        final cred = await firebase.FirebaseAuth.instance
-            .signInWithEmailAndPassword(
-              email: _emailController.text,
-              password: _passwordController.text,
-            );
+        await authService.logInWithEmailPassword(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
 
-        final user = cred.user;
-
-        if (user == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('The user does not exist')),
-          );
-          return;
-        }
-
-        //   // final callable = functions.httpsCallable('getStreamUserToken');
-        //   // final results = await callable();
-
-        //   // final client = StreamChatCore.of(context).client;
-        //   // await client.connectUser(User(id: creds.user!.uid), results.data);
+        final client = StreamChatCore.of(context).client;
+        await client.connectUser(
+          User(id: authService.getCurrentUserID()!),
+          client.devToken(authService.getCurrentUserID()!).rawValue,
+        );
 
         await Navigator.of(context).pushReplacement(HomeScreen.route);
-      } on firebase.FirebaseAuthException catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.message ?? 'Auth error')));
+      } on supabase.AuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          customSnackBar(
+            'Opps Error!',
+            e.message,
+            Icons.info_outline_rounded,
+            AppColors.accent,
+          ),
+        );
+        await Navigator.of(context).pushReplacement(LogInScreen.route);
       } catch (e) {
         logger.e('Log in error', error: e);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('An error occurred')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          customSnackBar(
+            'Opps, Error!',
+            'An error occurred.',
+            Icons.error_outline_rounded,
+            AppColors.accent,
+          ),
+        );
+        await Navigator.of(context).pushReplacement(LogInScreen.route);
       }
       setState(() {
         _loading = false;

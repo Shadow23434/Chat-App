@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
-
 import 'app.dart';
 
 abstract class Helpers {
@@ -17,14 +16,22 @@ abstract class Helpers {
     return currentDate.subtract(Duration(seconds: random.nextInt(200000)));
   }
 
+  static String formatTimer(int seconds) {
+    int minutes = seconds ~/ 60;
+    int remainingSeconds = seconds % 60;
+    String minutesStr = minutes.toString().padLeft(2, '0');
+    String secondsStr = remainingSeconds.toString().padLeft(2, '0');
+    return '$minutesStr:$secondsStr';
+  }
+
   static String getChannelName(Channel channel, User currentUser) {
     if (channel.name != null) {
       return channel.name!;
     } else if (channel.state?.members.isNotEmpty ?? false) {
-      final otherMembers = channel.state?.members
-        .where(
-          (element) => element.userId != currentUser.id,
-        ).toList();
+      final otherMembers =
+          channel.state?.members
+              .where((element) => element.userId != currentUser.id)
+              .toList();
       if (otherMembers?.length == 1) {
         return otherMembers!.first.user?.name ?? 'Unknown';
       } else {
@@ -39,10 +46,10 @@ abstract class Helpers {
     if (channel.image != null) {
       return channel.image!;
     } else if (channel.state?.members.isNotEmpty ?? false) {
-      final otherMembers = channel.state?.members
-        .where(
-          (element) => element.userId != currentUser.id,
-        ).toList();
+      final otherMembers =
+          channel.state?.members
+              .where((element) => element.userId != currentUser.id)
+              .toList();
       if (otherMembers?.length == 1) {
         return otherMembers!.first.user?.image;
       }

@@ -1,8 +1,13 @@
+import 'package:chat_app/auth/auth_service.dart';
+import 'package:chat_app/screens/home_screen.dart';
 import 'package:chat_app/screens/log_in_screen.dart';
+import 'package:chat_app/screens/otp_verify_screen.dart';
 import 'package:chat_app/theme.dart';
 import 'package:chat_app/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 import '../app.dart';
 
@@ -27,6 +32,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _confirmPasswordFormKey = GlobalKey<FormState>();
   bool _showErrors = false;
   bool _loading = false;
+  final authService = AuthService();
 
   Future<void> _signUp() async {
     setState(() {
@@ -41,20 +47,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _loading = true;
       });
       try {
-        final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
+        await authService.signUpWithEmailPassword(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
         );
-        print(cred);
-      } on FirebaseAuthException catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Firebase: ${e.message ?? 'Auth error'}')));
+
+        await Navigator.of(context).push(
+          OtpVerificationScreen(
+            email: _emailController.text.trim(),
+            name: _nameController.text.trim(),
+          ).route,
+        );
+      } on supabase.AuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          customSnackBar(
+            'Opps Error!',
+            e.message,
+            Icons.info_outline_rounded,
+            AppColors.accent,
+          ),
+        );
+        await Navigator.of(context).pushReplacement(SignUpScreen.route);
       } catch (e) {
-        logger.e('Log in error: ', error: e);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('An error occurred')));
+        logger.e('Sign up error: ', error: e);
+        ScaffoldMessenger.of(context).showSnackBar(
+          customSnackBar(
+            'Opps Error!',
+            'An error occurred',
+            Icons.info_outline_rounded,
+            AppColors.accent,
+          ),
+        );
+        await Navigator.of(context).pushReplacement(SignUpScreen.route);
       }
       setState(() {
         _loading = false;
@@ -93,90 +117,97 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 28.0),
-                child: Header(
-                  heading: 'Sign up with Email',
-                  subtitle:
-                      'Get chatting with friends and family today by signing up for our chat app!',
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Column(
-                children: [
-                  InputForm(
-                    label: 'Name',
-                    controller: _nameController,
-                    formKey: _nameFormKey,
-                    showErrors: _showErrors,
-                  ),
-                  SizedBox(height: 12.0),
-                  InputForm(
-                    label: 'Email',
-                    isEmail: true,
-                    controller: _emailController,
-                    formKey: _emailFormKey,
-                    showErrors: _showErrors,
-                  ),
-                  SizedBox(height: 12.0),
-                  InputForm(
-                    label: 'Password',
-                    isPassword: true,
-                    controller: _passwordController,
-                    formKey: _passwordFormKey,
-                    showErrors: _showErrors,
-                  ),
-                  SizedBox(height: 12.0),
-                  InputForm(
-                    label: 'Confirm Password',
-                    isPassword: true,
-                    controller: _confirmPasswordController,
-                    formKey: _confirmPasswordFormKey,
-                    showErrors: _showErrors,
-                    validator: _confirmPasswordValidator,
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 36),
-                child: Column(
-                  children: [
-                    ButtonBackground(
-                      onTap: () => _signUp(),
-                      string: 'Create an account',
-                    ),
-                    SizedBox(height: 16.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('You have an account?'),
-                        SizedBox(width: 4.0),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(
-                              context,
-                            ).pushReplacement(LogInScreen.route);
-                          },
-                          child: Text(
-                            'Log in',
-                            style: TextStyle(color: AppColors.secondary),
-                          ),
+      body:
+          _loading
+              ? Center(
+                child: CircularProgressIndicator(color: AppColors.secondary),
+              )
+              : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 28.0),
+                        child: Header(
+                          heading: 'Sign up with Email',
+                          subtitle:
+                              'Get chatting with friends and family today by signing up for our chat app!',
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          textAlign: TextAlign.center,
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      Column(
+                        children: [
+                          InputForm(
+                            label: 'Name',
+                            controller: _nameController,
+                            formKey: _nameFormKey,
+                            showErrors: _showErrors,
+                          ),
+                          SizedBox(height: 12.0),
+                          InputForm(
+                            label: 'Email',
+                            isEmail: true,
+                            controller: _emailController,
+                            formKey: _emailFormKey,
+                            showErrors: _showErrors,
+                          ),
+                          SizedBox(height: 12.0),
+                          InputForm(
+                            label: 'Password',
+                            isPassword: true,
+                            controller: _passwordController,
+                            formKey: _passwordFormKey,
+                            showErrors: _showErrors,
+                          ),
+                          SizedBox(height: 12.0),
+                          InputForm(
+                            label: 'Confirm Password',
+                            isPassword: true,
+                            controller: _confirmPasswordController,
+                            formKey: _confirmPasswordFormKey,
+                            showErrors: _showErrors,
+                            validator: _confirmPasswordValidator,
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 36),
+                        child: Column(
+                          children: [
+                            ButtonBackground(
+                              onTap: () => _signUp(),
+                              string: 'Create an account',
+                            ),
+                            SizedBox(height: 16.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('You have an account?'),
+                                SizedBox(width: 4.0),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(
+                                      context,
+                                    ).pushReplacement(LogInScreen.route);
+                                  },
+                                  child: Text(
+                                    'Log in',
+                                    style: TextStyle(
+                                      color: AppColors.secondary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
