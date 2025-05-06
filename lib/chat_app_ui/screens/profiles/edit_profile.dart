@@ -1,4 +1,4 @@
-import 'package:chat_app/chat_app_ui/app.dart';
+import 'package:chat_app/chat_app_ui/utils/app.dart';
 import 'package:chat_app/chat_app_ui/screens/profiles/own_profile_screen.dart';
 import 'package:chat_app/chat_app_ui/widgets/edit_avatar_dialog.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';

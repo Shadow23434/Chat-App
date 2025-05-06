@@ -1,7 +1,7 @@
-import 'package:chat_app/chat_app_ui/app.dart';
+import 'package:chat_app/chat_app_ui/utils/app.dart';
 import 'package:chat_app/chat_app_ui/pages/pages.dart';
 import 'package:chat_app/chat_app_ui/screens/screens.dart';
-import 'package:chat_app/chat_app_ui/theme.dart';
+import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

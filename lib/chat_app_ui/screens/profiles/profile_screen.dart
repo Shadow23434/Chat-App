@@ -1,19 +1,19 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_app/admin_panel_ui/models/users.dart';
-import 'package:chat_app/chat_app_ui/theme.dart';
+import 'package:chat_app/chat_app_ui/models/models.dart';
+import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class ProfileScreen extends StatelessWidget {
-  static Route route(User data) =>
+  static Route route(UserModel data) =>
       MaterialPageRoute(builder: (context) => ProfileScreen(user: data));
 
   const ProfileScreen({super.key, required this.user});
 
-  final User user;
+  final UserModel user;
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +24,11 @@ class ProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
-              Avatar.large(url: user.profileUrl),
-              Padding(padding: const EdgeInsets.all(8), child: Text(user.name)),
+              Avatar.large(url: user.profilePic),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(user.username),
+              ),
               _ButtonRow(isContacted: true, user: user),
               SizedBox(height: 32),
               _InfoContainer(user: user),
@@ -42,7 +45,7 @@ class ProfileScreen extends StatelessWidget {
 class _ButtonRow extends StatefulWidget {
   const _ButtonRow({required this.isContacted, required this.user});
   final bool isContacted;
-  final User user;
+  final UserModel user;
 
   @override
   State<_ButtonRow> createState() => __ButtonRowState();
@@ -89,7 +92,7 @@ class __ButtonRowState extends State<_ButtonRow> {
 
 class _InfoContainer extends StatelessWidget {
   const _InfoContainer({required this.user});
-  final User user;
+  final UserModel user;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +110,7 @@ class _InfoContainer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Name', style: TextStyle(color: AppColors.textFaded)),
-              Text(user.name),
+              Text(user.username),
             ],
           ),
           SizedBox(height: 12),
@@ -115,7 +118,7 @@ class _InfoContainer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Gender', style: TextStyle(color: AppColors.textFaded)),
-              Text(user.gender, style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(user.gender!, style: TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
           SizedBox(height: 12),
@@ -134,7 +137,7 @@ class _InfoContainer extends StatelessWidget {
                 'Phone Number',
                 style: TextStyle(color: AppColors.textFaded),
               ),
-              Text(user.phoneNumber),
+              Text(user.phoneNumber!),
             ],
           ),
         ],

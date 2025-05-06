@@ -1,9 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_app/admin_panel_ui/models/users.dart';
-import 'package:chat_app/chat_app_ui/helpers.dart';
+import 'package:chat_app/chat_app_ui/utils/helpers.dart';
 import 'package:chat_app/chat_app_ui/models/models.dart';
 import 'package:chat_app/chat_app_ui/screens/profiles/profile_screen.dart';
-import 'package:chat_app/chat_app_ui/theme.dart';
+import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -313,7 +312,7 @@ class _StoryContentState extends State<_StoryContent>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Avatar.small(
-                url: commentUser!.profileUrl,
+                url: commentUser!.profilePic,
                 onTap:
                     () => Navigator.of(
                       context,
@@ -325,7 +324,7 @@ class _StoryContentState extends State<_StoryContent>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      commentUser.name,
+                      commentUser.username,
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
@@ -465,7 +464,7 @@ class _StoryContentState extends State<_StoryContent>
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Avatar.small(
-                      url: user?.profileUrl,
+                      url: user?.profilePic,
                       onTap:
                           () => Navigator.of(
                             context,
@@ -477,7 +476,7 @@ class _StoryContentState extends State<_StoryContent>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          user!.name,
+                          user!.username,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),

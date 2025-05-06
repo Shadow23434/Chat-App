@@ -1,4 +1,4 @@
-import 'package:chat_app/admin_panel_ui/models/users.dart';
+import 'package:chat_app/chat_app_ui/models/models.dart';
 import 'package:chat_app/chat_app_ui/screens/screens.dart';
 import 'package:chat_app/chat_app_ui/widgets/avatar.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +8,7 @@ class ContactsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<User> demoUsers = users;
+    final List<UserModel> demoUsers = users;
 
     return Scaffold(
       body: Column(
@@ -36,7 +36,7 @@ class ContactsPage extends StatelessWidget {
 
 class ContactCard extends StatelessWidget {
   const ContactCard({super.key, required this.user});
-  final User user;
+  final UserModel user;
 
   @override
   Widget build(BuildContext context) {
@@ -44,10 +44,13 @@ class ContactCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         leading: Avatar.medium(
-          url: user.profileUrl,
+          url: user.profilePic,
           onTap: () => Navigator.of(context).push(ProfileScreen.route(user)),
         ),
-        title: Text(user.name, style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          user.username,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         subtitle: Text(user.email),
         onTap: () {},
       ),

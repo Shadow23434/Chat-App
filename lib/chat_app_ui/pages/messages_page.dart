@@ -1,10 +1,9 @@
 import 'dart:math';
-import 'package:chat_app/admin_panel_ui/models/users.dart';
-import 'package:chat_app/chat_app_ui/app.dart';
-import 'package:chat_app/chat_app_ui/helpers.dart';
+import 'package:chat_app/chat_app_ui/utils/app.dart';
+import 'package:chat_app/chat_app_ui/utils/helpers.dart';
 import 'package:chat_app/chat_app_ui/models/models.dart';
 import 'package:chat_app/chat_app_ui/screens/screens.dart';
-import 'package:chat_app/chat_app_ui/theme.dart';
+import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:faker/faker.dart' as faker_pkg;
 import 'package:flutter/material.dart';
@@ -20,7 +19,7 @@ class MessagesPage extends StatelessWidget {
       final chatId = faker_pkg.faker.guid.guid();
       // Generate participants (two users per chat)
       final participant1 = users[Random().nextInt(users.length)];
-      User participant2;
+      UserModel participant2;
       do {
         participant2 = users[Random().nextInt(users.length)];
       } while (participant2.id == participant1.id ||
@@ -96,7 +95,7 @@ class _MessageTitle extends StatelessWidget {
   const _MessageTitle({required this.chat});
 
   final Chat chat;
-  User _getReceiver() {
+  UserModel _getReceiver() {
     var currentUserId = currentUser.id; // Replace with current userId
     return chat.participants.firstWhere((user) => user.id != currentUserId);
   }
@@ -125,7 +124,7 @@ class _MessageTitle extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8),
               child: Avatar.medium(
-                url: receiver.profileUrl,
+                url: receiver.profilePic,
                 onTap:
                     () => Navigator.of(
                       context,
@@ -141,7 +140,7 @@ class _MessageTitle extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8),
                     child: Text(
-                      receiver.name,
+                      receiver.username,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         letterSpacing: 0.2,
@@ -296,7 +295,7 @@ class _StoryCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Avatar.medium(
-          url: user!.profileUrl,
+          url: user!.profilePic,
           onTap:
               () => Navigator.of(
                 context,
@@ -306,7 +305,7 @@ class _StoryCard extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(top: 16.0),
             child: Text(
-              user.name,
+              user.username,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: AppColors.textFaded,

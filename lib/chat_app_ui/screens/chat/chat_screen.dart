@@ -1,7 +1,6 @@
-import 'package:chat_app/admin_panel_ui/models/users.dart';
-import 'package:chat_app/chat_app_ui/app.dart';
+import 'package:chat_app/chat_app_ui/utils/app.dart';
 import 'package:chat_app/chat_app_ui/models/models.dart';
-import 'package:chat_app/chat_app_ui/theme.dart';
+import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +63,7 @@ class _AppBarTitle extends StatelessWidget {
 
   final Chat chat;
 
-  User _getReceiver() {
+  UserModel _getReceiver() {
     var currentUserId = currentUser.id; // Replace with current userId
     return chat.participants.firstWhere((user) => user.id != currentUserId);
   }
@@ -74,7 +73,7 @@ class _AppBarTitle extends StatelessWidget {
     final receiver = _getReceiver();
     return Row(
       children: [
-        Avatar.small(url: receiver.profileUrl),
+        Avatar.small(url: receiver.profilePic),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
@@ -82,7 +81,7 @@ class _AppBarTitle extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                receiver.name,
+                receiver.username,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 14),
               ),

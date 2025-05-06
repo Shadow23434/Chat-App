@@ -2,7 +2,7 @@ import 'package:chat_app/admin_panel_ui/pages/pages.dart';
 import 'package:chat_app/admin_panel_ui/screens/screens.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:chat_app/chat_app_ui/theme.dart';
+import 'package:chat_app/theme.dart';
 
 class HomeScreen extends StatelessWidget {
   static Route get route =>

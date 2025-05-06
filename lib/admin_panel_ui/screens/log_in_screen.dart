@@ -1,5 +1,5 @@
 import 'package:chat_app/admin_panel_ui/widget/widgets.dart';
-import 'package:chat_app/chat_app_ui/theme.dart';
+import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_app/admin_panel_ui/screens/screens.dart';

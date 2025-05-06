@@ -1,9 +1,9 @@
-import 'package:chat_app/admin_panel_ui/models/users.dart';
+import 'package:chat_app/chat_app_ui/models/models.dart';
 
 class Call {
   final String id;
-  final User caller;
-  final User receiver;
+  final UserModel caller;
+  final UserModel receiver;
   final String status;
   final int duration;
   final DateTime startedAt;

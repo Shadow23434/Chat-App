@@ -1,8 +1,8 @@
-import 'package:chat_app/admin_panel_ui/models/users.dart';
+import 'package:chat_app/chat_app_ui/models/models.dart';
 import 'package:chat_app/admin_panel_ui/screens/account_info.dart';
 import 'package:chat_app/admin_panel_ui/screens/screens.dart';
 import 'package:chat_app/admin_panel_ui/widget/widgets.dart';
-import 'package:chat_app/chat_app_ui/theme.dart';
+import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +23,7 @@ class _UsersPageState extends State<UsersPage> {
   final FocusNode _focusNode = FocusNode();
   bool _isFocused = false;
   bool _isClicked = false;
-  List<User> _filteredUsers = [];
+  List<UserModel> _filteredUsers = [];
   bool _sortAscending = true;
 
   @override
@@ -48,9 +48,9 @@ class _UsersPageState extends State<UsersPage> {
       } else {
         _filteredUsers =
             users.where((user) {
-              return user.name.toLowerCase().contains(query) ||
+              return user.username.toLowerCase().contains(query) ||
                   user.email.toLowerCase().contains(query) ||
-                  user.phoneNumber.toLowerCase().contains(query);
+                  user.phoneNumber!.toLowerCase().contains(query);
             }).toList();
       }
       _sortUsers();
@@ -61,8 +61,8 @@ class _UsersPageState extends State<UsersPage> {
     setState(() {
       _filteredUsers.sort((a, b) {
         return _sortAscending
-            ? a.name.compareTo(b.name)
-            : b.name.compareTo(a.name);
+            ? a.username.compareTo(b.username)
+            : b.username.compareTo(a.username);
       });
     });
   }
@@ -219,7 +219,7 @@ class _UsersPageState extends State<UsersPage> {
 
 class _Body extends StatelessWidget {
   const _Body({required this.users, required this.onSort});
-  final List<User> users;
+  final List<UserModel> users;
   final void Function(SortOption) onSort;
 
   @override
@@ -402,7 +402,7 @@ class _Body extends StatelessWidget {
                                     rows:
                                         users.asMap().entries.map((entry) {
                                           int index = entry.key;
-                                          User user = entry.value;
+                                          UserModel user = entry.value;
                                           return DataRow(
                                             cells: [
                                               DataCell(Text('${index + 1}')),
@@ -412,12 +412,12 @@ class _Body extends StatelessWidget {
                                                       MainAxisSize.min,
                                                   children: [
                                                     Avatar.small(
-                                                      url: user.profileUrl,
+                                                      url: user.profilePic,
                                                     ),
                                                     SizedBox(width: 4),
                                                     Flexible(
                                                       child: Text(
-                                                        user.name,
+                                                        user.username,
                                                         overflow:
                                                             TextOverflow
                                                                 .ellipsis,
@@ -435,7 +435,7 @@ class _Body extends StatelessWidget {
                                               ),
                                               DataCell(
                                                 Text(
-                                                  user.gender,
+                                                  user.gender!,
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                 ),
@@ -461,7 +461,7 @@ class _Body extends StatelessWidget {
                                                           builder: (context) {
                                                             return EditUser(
                                                               username:
-                                                                  user.name,
+                                                                  user.username,
                                                               email: user.email,
                                                               password:
                                                                   user.password,
@@ -469,9 +469,9 @@ class _Body extends StatelessWidget {
                                                                   user.phoneNumber ??
                                                                   'Unknown',
                                                               gender:
-                                                                  user.gender,
+                                                                  user.gender!,
                                                               profilePic:
-                                                                  user.profileUrl,
+                                                                  user.profilePic!,
                                                             );
                                                           },
                                                         );
@@ -537,7 +537,7 @@ class _Body extends StatelessWidget {
 class _CardList extends StatelessWidget {
   const _CardList({required this.users});
 
-  final List<User> users;
+  final List<UserModel> users;
 
   @override
   Widget build(BuildContext context) {

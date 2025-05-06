@@ -1,9 +1,8 @@
 import 'dart:math';
-import 'package:chat_app/admin_panel_ui/models/users.dart';
-import 'package:chat_app/chat_app_ui/helpers.dart';
-import 'package:chat_app/chat_app_ui/models/call.dart';
+import 'package:chat_app/chat_app_ui/models/models.dart';
+import 'package:chat_app/chat_app_ui/utils/helpers.dart';
 import 'package:chat_app/chat_app_ui/screens/screens.dart';
-import 'package:chat_app/chat_app_ui/theme.dart';
+import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:faker/faker.dart' as faker;
 import 'package:flutter/material.dart';
@@ -65,7 +64,7 @@ class _CallTitle extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Avatar.medium(
-                url: call.caller.profileUrl,
+                url: call.caller.profilePic,
                 onTap:
                     () => Navigator.of(
                       context,
@@ -81,7 +80,7 @@ class _CallTitle extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      call.caller.name,
+                      call.caller.username,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         letterSpacing: 0.2,

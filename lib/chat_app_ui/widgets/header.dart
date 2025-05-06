@@ -1,4 +1,4 @@
-import 'package:chat_app/chat_app_ui/theme.dart';
+import 'package:chat_app/theme.dart';
 import 'package:flutter/material.dart';
 
 class Header extends StatelessWidget {

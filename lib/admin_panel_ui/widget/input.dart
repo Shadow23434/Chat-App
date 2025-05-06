@@ -1,5 +1,5 @@
-import 'package:chat_app/chat_app_ui/helpers.dart';
-import 'package:chat_app/chat_app_ui/theme.dart';
+import 'package:chat_app/chat_app_ui/utils/helpers.dart';
+import 'package:chat_app/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 

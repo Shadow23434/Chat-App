@@ -1,6 +1,6 @@
 import 'package:chat_app/admin_panel_ui/models/chats.dart';
 import 'package:chat_app/admin_panel_ui/screens/chat_details.dart';
-import 'package:chat_app/chat_app_ui/theme.dart';
+import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 

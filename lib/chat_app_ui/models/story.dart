@@ -1,4 +1,4 @@
-import 'package:chat_app/admin_panel_ui/models/users.dart';
+import 'package:chat_app/chat_app_ui/models/models.dart';
 import 'package:faker/faker.dart';
 import 'package:meta/meta.dart';
 

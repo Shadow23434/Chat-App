@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_app/chat_app_ui/app.dart';
+import 'package:chat_app/chat_app_ui/utils/app.dart';
 import 'package:chat_app/chat_app_ui/widgets/icon_buttons.dart';
 import 'package:flutter/material.dart';
 

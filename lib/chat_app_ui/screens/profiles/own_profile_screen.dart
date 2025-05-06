@@ -1,9 +1,12 @@
-import 'package:chat_app/chat_app_ui/app.dart';
+import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_event.dart';
+import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_state.dart';
+import 'package:chat_app/chat_app_ui/utils/app.dart';
 import 'package:chat_app/chat_app_ui/screens/screens.dart';
-import 'package:chat_app/chat_app_ui/theme.dart';
+import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OwnProfileScreen extends StatelessWidget {
   static Route get route =>
@@ -22,85 +25,140 @@ class OwnProfileScreen extends StatelessWidget {
             tag: 'hero-profile-picture',
             child: Avatar.large(url: defaultAvatarUrl),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              children: [
-                Text("Puerto Rico"),
-                SizedBox(height: 4),
-                Text(
-                  'youremail@domain.com',
-                  style: TextStyle(color: AppColors.textFaded, fontSize: 13),
-                ),
-              ],
-            ),
-          ),
-          // Settings
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 40),
-            child: SizedBox(
-              height: 370,
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  switch (index) {
-                    case 0:
-                      return _SettingItem(
-                        icon: Icons.border_color_outlined,
-                        name: 'Edit Profile',
-                        onTap:
-                            () => Navigator.of(context).push(EditProfile.route),
-                      );
-                    case 1:
-                      return _SettingItem(
-                        icon: Icons.photo_library_outlined,
-                        name: 'Your Stories',
-                      );
-                    case 2:
-                      return _SettingItem(
-                        icon: Icons.notifications_outlined,
-                        name: 'Notifications',
-                      );
-                    case 3:
-                      return _SettingItem(
-                        icon: Icons.translate,
-                        name: 'Language',
-                        hasMenu: true,
-                      );
-                    case 4:
-                      return _SettingItem(
-                        icon: Icons.dark_mode_outlined,
-                        name: 'Dark Theme',
-                        hasButton: true,
-                      );
-                    case 5:
-                      return _SettingItem(
-                        icon: Icons.verified_user_outlined,
-                        name: 'Private Policy',
-                      );
-                    case 6:
-                      return _SettingItem(
-                        icon: Icons.info_outline,
-                        name: 'Help & Support',
-                      );
-                    case 7:
-                      return _SettingItem(
-                        icon: Icons.alternate_email_outlined,
-                        name: 'Contact us',
-                      );
-                  }
-                  return null;
-                },
-                separatorBuilder: (context, index) => SizedBox(height: 4),
-                itemCount: 8,
-              ),
-            ),
-          ),
+          Info(),
+          SettingList(),
           // Button
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: _SignOutButton(),
+          SignoutButton(),
+        ],
+      ),
+    );
+  }
+}
+
+class SignoutButton extends StatelessWidget {
+  const SignoutButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: BlocConsumer<AuthBloc, AuthState>(
+        builder: (context, state) {
+          if (state is AuthLoading) {
+            return Center(
+              child: CircularProgressIndicator(color: AppColors.secondary),
+            );
+          }
+          return ButtonBackground(
+            onTap: () => BlocProvider.of<AuthBloc>(context).add(SignoutEvent()),
+            string: 'Sign out',
+          );
+        },
+        listener: (context, state) {
+          if (state is AuthSuccess) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/login',
+              (route) => false,
+            );
+          } else if (state is AuthFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              customSnackBar(
+                'Auth Error',
+                state.error,
+                Icons.info_outline,
+                AppColors.accent,
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
+class Info extends StatelessWidget {
+  const Info({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        children: [
+          Text(currentUser.username),
+          SizedBox(height: 4),
+          Text(
+            currentUser.email,
+            style: TextStyle(color: AppColors.textFaded, fontSize: 13),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class SettingList extends StatelessWidget {
+  const SettingList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 40),
+      child: SizedBox(
+        height: 370,
+        child: ListView.separated(
+          itemBuilder: (context, index) {
+            switch (index) {
+              case 0:
+                return _SettingItem(
+                  icon: Icons.border_color_outlined,
+                  name: 'Edit Profile',
+                  onTap: () => Navigator.of(context).push(EditProfile.route),
+                );
+              case 1:
+                return _SettingItem(
+                  icon: Icons.photo_library_outlined,
+                  name: 'Your Stories',
+                );
+              case 2:
+                return _SettingItem(
+                  icon: Icons.notifications_outlined,
+                  name: 'Notifications',
+                );
+              case 3:
+                return _SettingItem(
+                  icon: Icons.translate,
+                  name: 'Language',
+                  hasMenu: true,
+                );
+              case 4:
+                return _SettingItem(
+                  icon: Icons.dark_mode_outlined,
+                  name: 'Dark Theme',
+                  hasButton: true,
+                );
+              case 5:
+                return _SettingItem(
+                  icon: Icons.verified_user_outlined,
+                  name: 'Private Policy',
+                );
+              case 6:
+                return _SettingItem(
+                  icon: Icons.info_outline,
+                  name: 'Help & Support',
+                );
+              case 7:
+                return _SettingItem(
+                  icon: Icons.alternate_email_outlined,
+                  name: 'Contact us',
+                );
+            }
+            return null;
+          },
+          separatorBuilder: (context, index) => SizedBox(height: 4),
+          itemCount: 8,
+        ),
       ),
     );
   }
@@ -236,41 +294,5 @@ class _DarkModeSwitch extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _SignOutButton extends StatefulWidget {
-  const _SignOutButton();
-
-  @override
-  __SignOutButtonState createState() => __SignOutButtonState();
-}
-
-class __SignOutButtonState extends State<_SignOutButton> {
-  bool _loading = false;
-
-  Future<void> _signOut() async {
-    setState(() {
-      _loading = true;
-    });
-    try {
-      await StreamChatCore.of(context).client.disconnectUser();
-
-      // await AuthService().signOut();
-
-      Navigator.of(context).pushReplacement(LogInScreen.route);
-    } on Exception catch (e) {
-      logger.e(e);
-      setState(() {
-        _loading = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _loading
-        ? const CircularProgressIndicator(color: AppColors.secondary)
-        : ButtonBackground(onTap: _signOut, string: 'Sign out');
   }
 }
