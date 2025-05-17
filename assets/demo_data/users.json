@@ -1,0 +1,220 @@
+[{
+  "_id": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "username": "Trevion_Shanahan",
+  "email": "Hanna.Wunsch@hotmail.com",
+  "password": "$2b$10$2Y2AVywG7a2MkEBSrL/5ve00vfsN2GRr8HSMZyq7DMQyoM4Tk9cBy",
+  "gender": "male",
+  "profilePic": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/2.jpg",
+  "isVerified": true,
+  "lastLogin": {
+    "$date": "2025-04-27T09:59:24.072Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-01T10:16:18.496Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-27T09:59:24.082Z"
+  },
+  "__v": 0,
+  "phoneNumber": "477-608-2675 x412"
+},
+{
+  "_id": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "username": "Haley79",
+  "email": "Alta66@yahoo.com",
+  "password": "$2b$10$Fd2fgmA19fg8yehYItTXpunI7QX0bAxj1ttIqVm67rGDwqhinA0IK",
+  "gender": "male",
+  "profilePic": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/79.jpg",
+  "isVerified": true,
+  "lastLogin": {
+    "$date": "2025-05-16T01:19:59.100Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-01T10:16:18.606Z"
+  },
+  "updatedAt": {
+    "$date": "2025-05-16T01:19:59.116Z"
+  },
+  "__v": 0,
+  "phoneNumber": "(552) 263-1586"
+},
+{
+  "_id": {
+    "$oid": "67ebbcf28d54e77bc8dccc82"
+  },
+  "username": "Vernie_Block",
+  "email": "Dallas_Quigley@hotmail.com",
+  "password": "$2b$10$N/3u3RZOjxw5RG.V3xcPj.5gK.hDcII1BSGYOMIb.6e4rPwtF13.O",
+  "gender": "unknown",
+  "profilePic": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/60.jpg",
+  "isVerified": true,
+  "lastLogin": {
+    "$date": "2025-03-31T15:35:53.773Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-01T10:16:18.723Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-01T10:16:18.723Z"
+  },
+  "__v": 0,
+  "phoneNumber": "(849) 614-9828 x82683"
+},
+{
+  "_id": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "username": "Annamarie.Hane9",
+  "email": "Bud.Schulist@gmail.com",
+  "password": "$2b$10$Se7pTdeVUTKxWzAYEoOjLeUynnOM3fjIubjLf80b.DT/Zv6HGlAEC",
+  "gender": "male",
+  "profilePic": "https://avatars.githubusercontent.com/u/95014287",
+  "isVerified": true,
+  "lastLogin": {
+    "$date": "2025-03-31T20:32:59.089Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-01T10:16:18.829Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-01T10:16:18.829Z"
+  },
+  "__v": 0,
+  "phoneNumber": "(757) 618-1775"
+},
+{
+  "_id": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "username": "Hailey59",
+  "email": "Imelda_Erdman@yahoo.com",
+  "password": "$2b$10$p8ra6cvDmC7uO8S62HnNTeF0kqOAS0hyUJKaYiPHal5ONqJYvmG86",
+  "gender": "male",
+  "profilePic": "https://avatars.githubusercontent.com/u/94796192",
+  "isVerified": true,
+  "lastLogin": {
+    "$date": "2025-04-22T09:23:53.717Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-01T10:16:18.932Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-22T09:23:53.726Z"
+  },
+  "__v": 0,
+  "phoneNumber": "1-983-705-6435 x5074"
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccc88"
+  },
+  "username": "Margarita.Lockman",
+  "email": "Melba_Lindgren82@hotmail.com",
+  "password": "$2b$10$q8k8aHAkKkJxPqBrH7IzJeIVyGbamLJN6C/6a0qtyBpyB8QJtgq7a",
+  "gender": "male",
+  "profilePic": "https://avatars.githubusercontent.com/u/15819547",
+  "isVerified": true,
+  "lastLogin": {
+    "$date": "2025-03-31T22:49:15.488Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-01T10:16:19.035Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-01T10:16:19.035Z"
+  },
+  "__v": 0,
+  "phoneNumber": "1-839-403-1580"
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "username": "Eldora_Stokes98",
+  "email": "Karianne92@gmail.com",
+  "password": "$2b$10$8bWZBLmW7KrkTXuBhczhnuUTWzGzZo3YIKzvFUYSvQGdY1rBW6iM2",
+  "gender": "male",
+  "profilePic": "https://avatars.githubusercontent.com/u/45643819",
+  "isVerified": true,
+  "lastLogin": {
+    "$date": "2025-03-31T18:35:28.705Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-01T10:16:19.135Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-01T10:16:19.135Z"
+  },
+  "__v": 0,
+  "phoneNumber": "(744) 848-8668 x14619"
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  },
+  "username": "Yadira.Lehner50",
+  "email": "Antwan.Haley72@yahoo.com",
+  "password": "$2b$10$k.Oe3.Xz5agGMofuO9ofUe0hJ4ADUP8KW9x73jYfCEUBdDlqlvj/6",
+  "gender": "unknown",
+  "profilePic": "https://avatars.githubusercontent.com/u/6703508",
+  "isVerified": true,
+  "lastLogin": {
+    "$date": "2025-04-27T10:09:04.070Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-01T10:16:19.237Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-27T10:09:04.070Z"
+  },
+  "__v": 0,
+  "phoneNumber": "738-631-7778 x0219"
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "username": "Raphaelle73",
+  "email": "Katrina.Gutkowski40@yahoo.com",
+  "password": "$2b$10$alOHkYyiDR1uX9gls42AbOIDETiGiclUTR2LIgoN1FxBsASaJ6USO",
+  "gender": "unknown",
+  "profilePic": "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/68.jpg",
+  "isVerified": true,
+  "lastLogin": {
+    "$date": "2025-04-28T03:35:06.464Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-01T10:16:19.339Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-28T03:35:06.465Z"
+  },
+  "__v": 0,
+  "phoneNumber": "650.200.5517 x1591"
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "username": "Kira_Dach",
+  "email": "Linnie43@yahoo.com",
+  "password": "$2b$10$77t7AN06JEBxbkdgqTQuQ.AXHUZIANyF/rUsH2igT5F3vIcmTMNae",
+  "gender": "female",
+  "profilePic": "https://avatars.githubusercontent.com/u/77470144",
+  "isVerified": true,
+  "lastLogin": {
+    "$date": "2025-04-22T08:02:26.617Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-01T10:16:19.443Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-22T08:02:26.618Z"
+  },
+  "__v": 0,
+  "phoneNumber": "204-514-9761"
+}]

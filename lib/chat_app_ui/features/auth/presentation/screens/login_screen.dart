@@ -2,14 +2,13 @@ import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_bloc.d
 import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_event.dart';
 import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_state.dart';
 import 'package:chat_app/chat_app_ui/features/auth/presentation/widgets/auth_prompt.dart';
-import 'package:chat_app/chat_app_ui/screens/screens.dart';
 import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LogInScreen extends StatefulWidget {
-  // static Route get route =>
+  // static Route get route =>s
   //     MaterialPageRoute(builder: (context) => const LogInScreen());
 
   const LogInScreen({super.key});
@@ -151,7 +150,7 @@ class _LogInScreenState extends State<LogInScreen> {
                     SizedBox(height: 16),
                     // Prompt
                     AuthPrompt(
-                      title: 'Don’t have an account?',
+                      title: "Don't have an account?",
                       subtile: 'Sign up',
                       onTap: () => Navigator.pushNamed(context, '/signup'),
                     ),
@@ -235,7 +234,7 @@ class InputColumn extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: GestureDetector(
               onTap: () {
-                Navigator.of(context).push(ForgotPasswordScreen.route);
+                Navigator.pushNamed(context, '/forgot-password');
               },
               child: Text(
                 'Forgot password?',

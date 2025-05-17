@@ -1,0 +1,130 @@
+[{
+  "_id": {
+    "$oid": "6806627f42f2809470eaad44"
+  },
+  "userId1": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "userId2": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "status": "accepted",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "680662ad42f2809470eaad47"
+  },
+  "userId1": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  },
+  "userId2": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "status": "accepted",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "680662bb42f2809470eaad48"
+  },
+  "userId1": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  },
+  "userId2": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "status": "pending",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "680662cb42f2809470eaad49"
+  },
+  "userId1": {
+    "$oid": "67ebbcf38d54e77bc8dccc88"
+  },
+  "userId2": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "status": "accepted",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "680662df42f2809470eaad4a"
+  },
+  "userId1": {
+    "$oid": "67ebbcf38d54e77bc8dccc88"
+  },
+  "userId2": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "status": "pending",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "680663ff42f2809470eaad50"
+  },
+  "userId1": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  },
+  "userId2": {
+    "$oid": "67ebbcf28d54e77bc8dccc82"
+  },
+  "status": "accepted",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "680671c536f5693adcbd2ce4"
+  },
+  "userId1": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  },
+  "userId2": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "status": "accepted",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68071114cbc7555f2c2b6d86"
+  },
+  "userId1": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "userId2": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "status": "pending",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6807caf74c0e92c907ff1886"
+  },
+  "userId1": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  },
+  "userId2": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "status": "accepted",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6807cb054c0e92c907ff188a"
+  },
+  "userId1": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  },
+  "userId2": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "status": "accepted",
+  "__v": 0
+}]

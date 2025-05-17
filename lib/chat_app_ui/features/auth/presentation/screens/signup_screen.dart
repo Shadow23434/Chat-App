@@ -170,7 +170,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     AuthPrompt(
                       title: 'You have an account?',
                       subtile: 'Log in',
-                      onTap: () => Navigator.pushNamed(context, '/login'),
+                      onTap: () => Navigator.pushNamed(context, '/'),
                       // () => Navigator.of(
                       //   context,
                       // ).pushReplacement(LogInScreen.route),

@@ -2,18 +2,17 @@ import 'package:chat_app/admin_panel_ui/widget/widgets.dart';
 import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:chat_app/admin_panel_ui/screens/screens.dart';
 
-class LoginScreen extends StatefulWidget {
+class AdminLogInScreen extends StatefulWidget {
   static Route get route =>
-      MaterialPageRoute(builder: (context) => LoginScreen());
-  const LoginScreen({super.key});
+      MaterialPageRoute(builder: (context) => AdminLogInScreen());
+  const AdminLogInScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _AdminLogInScreenState createState() => _AdminLogInScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _AdminLogInScreenState extends State<AdminLogInScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _nameFormKey = GlobalKey<FormState>();
@@ -28,7 +27,10 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordFormKey.currentState!.validate()) {
       // Validate database
 
-      Navigator.of(context).pushReplacement(HomeScreen.route);
+      await Future.delayed(Duration(milliseconds: 100));
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/user');
+      }
     }
   }
 

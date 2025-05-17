@@ -1,18 +1,23 @@
 import 'package:chat_app/admin_panel_ui/pages/pages.dart';
-import 'package:chat_app/admin_panel_ui/screens/screens.dart';
+import 'package:chat_app/core/navigation/web_navigation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_app/theme.dart';
 
-class HomeScreen extends StatelessWidget {
+class AdminHomeScreen extends StatefulWidget {
   static Route get route =>
-      MaterialPageRoute(builder: (context) => HomeScreen());
-  HomeScreen({super.key});
+      MaterialPageRoute(builder: (context) => AdminHomeScreen());
+  AdminHomeScreen({super.key});
 
+  @override
+  State<AdminHomeScreen> createState() => _AdminHomeScreenState();
+}
+
+class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final ValueNotifier<int> pageIndex = ValueNotifier(0);
   final ValueNotifier<String> title = ValueNotifier('Users');
 
-  final pages = const [
+  final List<Widget> pages = const [
     UsersPage(),
     ChatPage(),
     StoriesPage(),
@@ -20,18 +25,53 @@ class HomeScreen extends StatelessWidget {
     HelpPage(),
   ];
 
-  final pageTitles = const [
+  final List<String> pageTitles = const [
     'Users',
     'Chat Messaging',
     'Activity Stories',
     'Video & Audio Call',
     'Help & Support',
-    '',
   ];
 
-  void _onNavigationItemSelected(index) {
+  final List<String> pageRoutes = const [
+    '/admin/user',
+    '/admin/chat',
+    '/admin/stories',
+    '/admin/calls',
+    '/admin/help',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Set initial page based on current route
+    _initPageFromRoute();
+  }
+
+  void _initPageFromRoute() {
+    final currentPath = WebNavigation.getCurrentPath();
+
+    // Find matching route index
+    int routeIndex = pageRoutes.indexOf(currentPath);
+
+    // Default to users page if route not found
+    if (routeIndex == -1) routeIndex = 0;
+
+    // Set page index and title
+    pageIndex.value = routeIndex;
+    title.value = pageTitles[routeIndex];
+  }
+
+  void _onNavigationItemSelected(int index) {
+    // Update UI
     title.value = pageTitles[index];
     pageIndex.value = index;
+
+    // Update URL without refreshing page
+    final path = pageRoutes[index];
+
+    // Use browser history API to update URL without page reload
+    WebNavigation.updateUrlWithoutReload(path);
   }
 
   @override
@@ -40,7 +80,10 @@ class HomeScreen extends StatelessWidget {
       body: Row(
         children: [
           // Sidebar
-          __SideBar(onItemSelected: _onNavigationItemSelected),
+          __SideBar(
+            onItemSelected: _onNavigationItemSelected,
+            currentIndex: pageIndex.value,
+          ),
           // Main Content
           Expanded(
             child: ValueListenableBuilder(
@@ -57,9 +100,10 @@ class HomeScreen extends StatelessWidget {
 }
 
 class __SideBar extends StatefulWidget {
-  const __SideBar({required this.onItemSelected});
+  const __SideBar({required this.onItemSelected, required this.currentIndex});
 
   final ValueChanged<int> onItemSelected;
+  final int currentIndex;
 
   @override
   State<__SideBar> createState() => _SideBarState();
@@ -67,7 +111,7 @@ class __SideBar extends StatefulWidget {
 
 class _SideBarState extends State<__SideBar>
     with SingleTickerProviderStateMixin {
-  var selectedIndex = 0;
+  late int selectedIndex;
   late AnimationController _animationController;
   late Animation<double> _widthAnimation;
   bool _isMinimized = false;
@@ -75,6 +119,7 @@ class _SideBarState extends State<__SideBar>
   @override
   void initState() {
     super.initState();
+    selectedIndex = widget.currentIndex;
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -82,6 +127,16 @@ class _SideBarState extends State<__SideBar>
     _widthAnimation = Tween<double>(begin: 250, end: 70).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
+  }
+
+  @override
+  void didUpdateWidget(__SideBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.currentIndex != widget.currentIndex) {
+      setState(() {
+        selectedIndex = widget.currentIndex;
+      });
+    }
   }
 
   @override
@@ -290,7 +345,11 @@ class __MenuItemState extends State<_MenuItem> {
       },
       onTap:
           widget.isSignOut
-              ? () => Navigator.of(context).pushReplacement(LoginScreen.route)
+              ? () => Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/login',
+                (route) => false,
+              )
               : () => widget.onTap(widget.index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),

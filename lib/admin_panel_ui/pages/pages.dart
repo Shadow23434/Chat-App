@@ -1,4 +1,4 @@
-export 'chat_page.dart' hide SortOption;
+export 'chat_page.dart' hide SortOption, AccountOption;
 export 'calls_page.dart';
 export 'stories_page.dart';
 export 'help_page.dart';

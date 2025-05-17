@@ -8,8 +8,8 @@
 // import 'package:chat_app/chat_app_ui/app.dart';
 import 'package:chat_app/chat_app_ui/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:chat_app/chat_app_ui/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:chat_app/core/app_switcher/app_switcher.dart';
 import 'package:chat_app/theme.dart';
-import 'package:chat_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,7 +19,7 @@ void main() {
       authRemoteDataSource: AuthRemoteDataSource(),
     );
     await tester.pumpWidget(
-      MyApp(appTheme: AppTheme(), authRepository: authRepository),
+      AppSwitcher(appTheme: AppTheme(), authRepository: authRepository),
     );
 
     // Verify that our counter starts at 0.

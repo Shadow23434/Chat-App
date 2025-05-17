@@ -1,5 +1,4 @@
 import 'package:chat_app/chat_app_ui/models/models.dart';
-import 'package:chat_app/admin_panel_ui/screens/account_info.dart';
 import 'package:chat_app/admin_panel_ui/screens/screens.dart';
 import 'package:chat_app/admin_panel_ui/widget/widgets.dart';
 import 'package:chat_app/theme.dart';
@@ -169,7 +168,7 @@ class _UsersPageState extends State<UsersPage> {
                       option == AccountOption.signOut
                           ? Navigator.of(
                             context,
-                          ).pushReplacement(LoginScreen.route)
+                          ).pushReplacement(AdminLogInScreen.route)
                           : Navigator.of(
                             context,
                           ).pushReplacement(AccountInfo.route);

@@ -1,0 +1,60 @@
+[{
+  "_id": {
+    "$oid": "680870b942f2442d78b2be3b"
+  },
+  "caption": "Enjoying a sunny day at the beach!",
+  "type": "image",
+  "createdAt": {
+    "$date": "2025-04-23T10:00:00.000Z"
+  },
+  "expiresAt": {
+    "$date": "2025-06-25T10:00:00.000Z"
+  },
+  "mediaName": "Beach Vibes",
+  "likes": 12,
+  "mediaUrl": "https://example.com/beach.jpg",
+  "userId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  },
+  "backgroundUrl": "https://picsum.photos/200/300?random=1"
+},
+{
+  "_id": {
+    "$oid": "680870ce42f2442d78b2be3c"
+  },
+  "caption": "Exploring the city at night.",
+  "type": "image",
+  "createdAt": {
+    "$date": "2025-04-23T11:00:00.000Z"
+  },
+  "expiresAt": {
+    "$date": "2025-06-25T11:00:00.000Z"
+  },
+  "mediaName": "City Lights",
+  "likes": 8,
+  "mediaUrl": "https://example.com/city.jpg",
+  "userId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "backgroundUrl": "https://picsum.photos/200/300?random=1"
+},
+{
+  "_id": {
+    "$oid": "680870d742f2442d78b2be3d"
+  },
+  "caption": "Hiking in the mountains!",
+  "type": "image",
+  "createdAt": {
+    "$date": "2025-04-23T12:00:00.000Z"
+  },
+  "expiresAt": {
+    "$date": "2025-06-25T12:00:00.000Z"
+  },
+  "mediaName": "Mountain Air",
+  "likes": 5,
+  "mediaUrl": "https://example.com/mountain.jpg",
+  "userId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "backgroundUrl": "https://picsum.photos/200/300?random=1"
+}]

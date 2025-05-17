@@ -56,11 +56,7 @@ class SignoutButton extends StatelessWidget {
         },
         listener: (context, state) {
           if (state is AuthSuccess) {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/login',
-              (route) => false,
-            );
+            Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               customSnackBar(

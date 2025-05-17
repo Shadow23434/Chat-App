@@ -1,0 +1,1797 @@
+[{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccb0"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccaa"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "content": "",
+  "type": "image",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-09-22T12:23:24.594Z"
+  },
+  "__v": 0,
+  "mediaUrl": "https://picsum.photos/200/300?random=1"
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccb2"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca8"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Desolo demonstro quisquam urbs admoneo adduco confero.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-03-28T13:23:28.928Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccb4"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc94"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "content": "",
+  "type": "image",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-01-16T15:39:32.850Z"
+  },
+  "__v": 0,
+  "mediaUrl": "https://picsum.photos/200/300?random=1"
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccb6"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc92"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "content": "Virga conculco cinis supplanto iure capitulus laudantium paens capillus celo.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-03-01T21:45:18.674Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccb8"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccac"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Expedita depopulo cilicium decor cattus vulgo vos caries.",
+  "type": "image",
+  "isRead": true,
+  "mediaUrl": "https://picsum.photos/seed/ipIaKB/1719/745",
+  "createdAt": {
+    "$date": "2025-01-31T10:18:09.723Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccba"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccac"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Creber acceptus ipsa tendo utor statua videlicet coma.",
+  "type": "image",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-02-03T02:57:04.683Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccbc"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9c"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "content": "Sol omnis congregatio curso.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-01-18T01:08:25.046Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccbe"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca6"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc88"
+  },
+  "content": "Abutor coma sol tracto atque adinventitias tenuis custodia.",
+  "type": "text",
+  "isRead": true,
+  "mediaUrl": "",
+  "createdAt": {
+    "$date": "2024-12-15T15:21:56.784Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccc0"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccae"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Stillicidium stabilis aiunt vae suffoco amita coerceo via conservo venio.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-10-12T08:11:43.246Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccc2"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc92"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "content": "Vorax consectetur cado.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2024-12-21T02:31:31.141Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccc4"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9c"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Assumenda vulgo condico expedita solvo censura.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2024-12-12T06:43:11.670Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccc6"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccac"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Ante vorago ara magni voveo tergeo verbera.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-02-26T18:03:40.863Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccc8"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca8"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Tactus admoveo sol bellicus.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-03-28T05:14:23.057Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccca"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9c"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Atrox cunctatio ceno patruus amitto.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-10-13T02:14:54.595Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccccc"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca8"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "content": "Terra trepide victoria atqui.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-07-06T06:57:41.056Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccce"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca2"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Adamo universe tenax caelestis vestigium.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-01-30T16:17:52.329Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccd0"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9e"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "",
+  "type": "image",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-03-18T17:18:20.996Z"
+  },
+  "__v": 0,
+  "mediaUrl": "https://picsum.photos/200/300?random=1"
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccd2"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9a"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "content": "",
+  "type": "image",
+  "isRead": false,
+  "mediaUrl": "https://loremflickr.com/907/3202?lock=2844333918305379",
+  "createdAt": {
+    "$date": "2024-10-29T12:57:23.947Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccd4"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc94"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc88"
+  },
+  "content": "Defungo atavus peccatus somnus conforto porro stultus.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2024-12-30T21:39:18.631Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccd6"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca0"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "content": "Abeo dolore vesper crepusculum trado tutamen talus templum sonitus.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-03-10T21:12:01.405Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccd8"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc96"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "content": "Admoveo tersus deorsum quasi cunae.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-02-18T16:08:38.929Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccda"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca2"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "",
+  "type": "image",
+  "isRead": true,
+  "mediaUrl": "https://loremflickr.com/173/2845?lock=7076049251471691",
+  "createdAt": {
+    "$date": "2025-02-23T15:12:51.017Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccdc"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9c"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Verus deorsum succurro cupiditas velociter.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2024-11-27T14:42:53.748Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccde"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccac"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Comis volubilis bardus conventus eos crur nisi quaerat.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-02-26T11:35:31.860Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccce0"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca6"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc88"
+  },
+  "content": "Considero theca acies viridis spero cras.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-11-22T12:03:01.282Z"
+  },
+  "__v": 0,
+  "mediaUrl": ""
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccce2"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca8"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Delicate aer compono curso.",
+  "type": "audio",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2024-08-18T03:43:07.626Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccce4"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9e"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Arca vestigium vaco testimonium auxilium suscipio caecus tamen aggero.",
+  "type": "text",
+  "isRead": true,
+  "mediaUrl": "https://picsum.photos/seed/gWRn4/1587/1465",
+  "createdAt": {
+    "$date": "2025-03-20T02:44:08.125Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccce6"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca4"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc82"
+  },
+  "content": "Deserunt decimus utroque at sortitus.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-09-08T13:03:32.592Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccce8"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca0"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "content": "Ciminatio validus voluptas vix vulticulus.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-03-26T03:26:25.698Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccea"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca6"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc88"
+  },
+  "content": "Aestas vinum alo asper.",
+  "type": "image",
+  "isRead": false,
+  "mediaUrl": "https://loremflickr.com/1946/3700?lock=8499205042126194",
+  "createdAt": {
+    "$date": "2024-11-14T15:05:15.351Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccec"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9a"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "content": "Cur adipiscor sumo bos tenus verbera patruus nam sumptus vespillo.",
+  "type": "image",
+  "isRead": false,
+  "mediaUrl": "https://loremflickr.com/1877/2240?lock=292086279942187",
+  "createdAt": {
+    "$date": "2025-02-03T18:21:12.282Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccee"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca2"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "content": "Titulus caries in cibo cum deinde nisi.",
+  "type": "audio",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-03-16T05:16:14.183Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccf0"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9a"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "content": "Vetus antiquus voveo.",
+  "type": "audio",
+  "isRead": true,
+  "mediaUrl": "https://picsum.photos/seed/IpBpT3/1388/1169",
+  "createdAt": {
+    "$date": "2025-03-20T02:13:09.433Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccf2"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca2"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Avaritia abstergo trado est trucido.",
+  "type": "audio",
+  "isRead": false,
+  "mediaUrl": "https://loremflickr.com/1914/2645?lock=5172235634443215",
+  "createdAt": {
+    "$date": "2025-03-06T18:10:15.408Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccf4"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9c"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "content": "Comprehendo toties titulus.",
+  "type": "image",
+  "isRead": false,
+  "mediaUrl": "https://loremflickr.com/216/444?lock=8380853648528782",
+  "createdAt": {
+    "$date": "2024-08-07T05:47:21.485Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccf6"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca2"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Aggero universe cotidie defungo.",
+  "type": "audio",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-02-18T14:22:28.021Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccf8"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9c"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "content": "Cogito exercitationem apparatus eum aegrus vomica uterque.",
+  "type": "text",
+  "isRead": true,
+  "mediaUrl": "https://loremflickr.com/1713/2828?lock=58505448607072",
+  "createdAt": {
+    "$date": "2024-09-19T03:52:05.649Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccfa"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9a"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "content": "Sto curo tribuo pecto.",
+  "type": "image",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-11-13T09:57:57.487Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccfc"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccaa"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Aspicio ascisco conventus.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-02-09T13:41:34.584Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccfe"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc96"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Comprehendo sumptus cerno occaecati sed ratione sonitus odit cilicium venustas.",
+  "type": "text",
+  "isRead": true,
+  "mediaUrl": "https://loremflickr.com/3642/1877?lock=7871998025919004",
+  "createdAt": {
+    "$date": "2025-02-18T14:16:35.627Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd00"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccaa"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "content": "Bos accusator tutis aggredior decerno caelum.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-03-13T07:04:02.384Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd02"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc98"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  },
+  "content": "Cernuus delectatio tersus.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-12-07T10:53:38.355Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd04"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccaa"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "content": "Laboriosam tot adduco titulus trans.",
+  "type": "audio",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-11-20T03:48:26.589Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd06"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc98"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "content": "Neque arbitro ante vita sodalitas cito confugo.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-03-09T14:24:18.853Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd08"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca8"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Modi carus laborum illum votum antepono.",
+  "type": "image",
+  "isRead": true,
+  "mediaUrl": "https://loremflickr.com/2717/3525?lock=7604818039577090",
+  "createdAt": {
+    "$date": "2024-10-27T16:08:29.869Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd0a"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9a"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "content": "Optio sit alii colo avarus cohors aranea virgo varius defero.",
+  "type": "image",
+  "isRead": true,
+  "mediaUrl": "https://picsum.photos/seed/mUYPhn/3842/1377",
+  "createdAt": {
+    "$date": "2025-02-20T19:54:49.176Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd0c"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca8"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Charisma tamen crur capto bis venio.",
+  "type": "audio",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-11-28T14:21:51.264Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd0e"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca6"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "content": "Quis succedo vetus cohaero communis abduco sponte veritatis utique.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-02-08T22:30:56.548Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd10"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc94"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "content": "Cetera atrox communis aliqua voluntarius paulatim tamquam.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-01-25T22:49:49.046Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd12"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca6"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "content": "Amplitudo taceo tonsor sodalitas subiungo vir territo trans arbustum.",
+  "type": "text",
+  "isRead": false,
+  "mediaUrl": "https://picsum.photos/seed/sa8wKzT/3549/797",
+  "createdAt": {
+    "$date": "2025-03-18T19:25:16.168Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd14"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca6"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc88"
+  },
+  "content": "Admitto adaugeo defessus acsi ater tametsi aeger velut.",
+  "type": "audio",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-11-21T03:02:52.348Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd16"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc96"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Creta ascisco expedita.",
+  "type": "image",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-03-03T07:00:02.155Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd18"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc98"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "content": "Beneficium temperantia aestas sol cognomen cogo.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-03-31T12:24:43.787Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd1a"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca2"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Uter veritas speculum conatus quos stips vorago.",
+  "type": "audio",
+  "isRead": true,
+  "mediaUrl": "https://picsum.photos/seed/vuvVaJ4hT6/1947/96",
+  "createdAt": {
+    "$date": "2025-03-02T19:26:31.294Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd1c"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccaa"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "content": "Correptius credo vallum abundans statua aeger soleo.",
+  "type": "image",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-03-18T10:03:33.308Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd1e"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc92"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "content": "Summopere tempora benigne aspicio velociter adamo tener.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-02-09T22:18:04.405Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd20"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc92"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "content": "Adulatio cruentus pecco tricesimus modi repellat quibusdam cogo.",
+  "type": "text",
+  "isRead": true,
+  "mediaUrl": "https://picsum.photos/seed/cdil4LZay/946/1892",
+  "createdAt": {
+    "$date": "2025-02-23T00:08:37.307Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd22"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9a"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "content": "Bonus vobis asper alveus pauci comitatus cito.",
+  "type": "text",
+  "isRead": false,
+  "mediaUrl": "https://loremflickr.com/16/2273?lock=4073061941975919",
+  "createdAt": {
+    "$date": "2024-10-13T16:57:50.671Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd24"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc92"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "content": "Umerus ab cavus vir avaritia coerceo thesis.",
+  "type": "image",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-01-27T18:38:54.827Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd26"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc94"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc88"
+  },
+  "content": "Impedit cohaero tabesco adeptio molestias celo veniam.",
+  "type": "image",
+  "isRead": false,
+  "mediaUrl": "https://loremflickr.com/144/3118?lock=3623282235143453",
+  "createdAt": {
+    "$date": "2024-12-29T20:38:05.850Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd28"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc92"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "content": "Acquiro error velociter verbera.",
+  "type": "audio",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-01-14T02:31:03.259Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd2a"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9e"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Bellicus congregatio voluptate dedico viscus surgo audax.",
+  "type": "text",
+  "isRead": true,
+  "mediaUrl": "https://picsum.photos/seed/A7h1P/1303/1060",
+  "createdAt": {
+    "$date": "2025-03-21T15:44:37.137Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd2c"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc94"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "content": "Patior articulus pauci tempora verecundia xiphias credo.",
+  "type": "audio",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-02-08T10:55:59.357Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd2e"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9a"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "content": "Cedo tego tero deorsum decor una.",
+  "type": "text",
+  "isRead": false,
+  "mediaUrl": "https://loremflickr.com/3004/1729?lock=7444801948840070",
+  "createdAt": {
+    "$date": "2024-12-09T02:21:15.978Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd30"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccaa"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "content": "Acsi turba maiores termes cena.",
+  "type": "image",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-12-08T12:19:40.222Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd32"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc92"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "content": "Magnam acervus ventito earum defluo ceno.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2024-12-25T17:24:14.347Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd34"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccae"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "content": "Tollo cavus comburo dolore vilis eligendi aestus coniecto nihil.",
+  "type": "text",
+  "isRead": true,
+  "mediaUrl": "https://loremflickr.com/123/2226?lock=6615274009281998",
+  "createdAt": {
+    "$date": "2025-02-06T11:34:03.442Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd36"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc96"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "content": "Utpote sustineo solium aptus vehemens autus delicate aegre.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-02-24T17:20:08.474Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd38"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca8"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Aliqua amissio tenus enim avarus.",
+  "type": "audio",
+  "isRead": true,
+  "mediaUrl": "https://picsum.photos/seed/kxwqnaEHqj/3013/3160",
+  "createdAt": {
+    "$date": "2024-08-11T01:27:08.222Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd3a"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca2"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Ipsam claudeo valeo suus decerno.",
+  "type": "text",
+  "isRead": true,
+  "mediaUrl": "https://picsum.photos/seed/SoM3Ae/3712/2268",
+  "createdAt": {
+    "$date": "2025-03-03T21:12:13.939Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd3c"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca0"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "content": "Dignissimos necessitatibus provident admiratio.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-03-21T22:29:26.574Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd3e"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9c"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Cavus minus iste.",
+  "type": "image",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2024-11-20T19:49:45.055Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd40"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc92"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "content": "Comitatus cubicularis adfero advoco alveus iste.",
+  "type": "audio",
+  "isRead": false,
+  "mediaUrl": "https://loremflickr.com/1623/3688?lock=3728237208894615",
+  "createdAt": {
+    "$date": "2025-02-20T22:02:10.466Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd44"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc98"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  },
+  "content": "Statim ascisco cerno sollicito apparatus cerno candidus adfero.",
+  "type": "audio",
+  "isRead": true,
+  "mediaUrl": "https://loremflickr.com/3159/3314?lock=1829055501942762",
+  "createdAt": {
+    "$date": "2024-12-31T06:28:08.001Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd46"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9e"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Doloremque est delicate.",
+  "type": "image",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-03-18T21:33:09.573Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd48"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca0"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "content": "Creta arceo cauda quae neque adhaero dignissimos depono volutabrum.",
+  "type": "audio",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-03-10T00:51:04.122Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd4c"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc94"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "content": "Defero subseco subiungo volaticus decerno impedit.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-03-22T04:10:42.536Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd4e"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca4"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "content": "Ver sapiente arx vitae beatus caveo.",
+  "type": "text",
+  "isRead": true,
+  "mediaUrl": "https://loremflickr.com/1003/119?lock=1976275271614901",
+  "createdAt": {
+    "$date": "2024-09-03T16:40:56.950Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd50"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccae"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Impedit defero tutis.",
+  "type": "audio",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2024-06-24T01:45:27.933Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd52"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc94"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "content": "Bellum laborum autem denego tactus.",
+  "type": "audio",
+  "isRead": true,
+  "mediaUrl": "https://picsum.photos/seed/L7zhGlMa/2056/2052",
+  "createdAt": {
+    "$date": "2025-03-18T21:34:22.370Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd54"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc92"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "content": "Deprecator angelus tutamen thesis blandior tabula decimus beatae alius cogo.",
+  "type": "image",
+  "isRead": true,
+  "mediaUrl": "https://loremflickr.com/3647/1639?lock=3234951201218486",
+  "createdAt": {
+    "$date": "2025-03-05T14:33:32.814Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd56"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca2"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "content": "Decor soluta deleo terga tempora turpis.",
+  "type": "image",
+  "isRead": false,
+  "mediaUrl": "https://loremflickr.com/558/3565?lock=4492764236942237",
+  "createdAt": {
+    "$date": "2025-01-30T18:25:17.480Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd58"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca2"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "content": "Cruciamentum dedecor qui verus.",
+  "type": "image",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-02-22T17:17:12.242Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd5a"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca4"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc82"
+  },
+  "content": "Porro amo vere autus conor quaerat argumentum.",
+  "type": "image",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2024-12-25T08:14:00.238Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd5c"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9a"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "content": "Tondeo pecus sursum utique adicio.",
+  "type": "audio",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-03-19T11:52:11.352Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd5e"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc92"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "content": "Teres tibi solvo aliqua pauci tergeo.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-01-13T19:01:14.256Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd60"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca0"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "content": "Abduco vobis catena.",
+  "type": "text",
+  "isRead": true,
+  "mediaUrl": "https://picsum.photos/seed/zaFVmrkZ8f/1760/239",
+  "createdAt": {
+    "$date": "2025-03-27T04:01:29.963Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd62"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca2"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "content": "Voluptatibus vis appositus textilis coaegresco.",
+  "type": "audio",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-02-02T03:38:52.384Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd64"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dcccaa"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Calcar depromo termes.",
+  "type": "text",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-02-23T16:04:47.714Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd66"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca6"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc88"
+  },
+  "content": "Speciosus collum trans alveus comes summisse ab curriculum.",
+  "type": "audio",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-11-17T23:40:42.537Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd68"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca8"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Ea alius sed xiphias voco pecto accommodo excepturi.",
+  "type": "image",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-07-19T19:43:19.887Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd6a"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccca4"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc82"
+  },
+  "content": "Aestus cenaculum volup est vacuus contigo earum caterva unus peior.",
+  "type": "image",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-08-02T12:37:03.118Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd6e"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9e"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "content": "Alias admoveo subito atrocitas delinquo volubilis accusamus.",
+  "type": "image",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-03-17T00:14:58.574Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd70"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9c"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Tutamen ab adstringo.",
+  "type": "text",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2025-02-22T20:59:02.460Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd72"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9c"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Voluptatem corpus rerum.",
+  "type": "audio",
+  "isRead": false,
+  "createdAt": {
+    "$date": "2024-08-20T10:33:02.154Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd74"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9a"
+  },
+  "senderId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "content": "Voluptatum aestivus convoco caveo capto.",
+  "type": "image",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2025-01-18T02:00:35.053Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd76"
+  },
+  "chatId": {
+    "$oid": "67ebbcf38d54e77bc8dccc9c"
+  },
+  "senderId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "content": "Totidem calculus quaerat.",
+  "type": "audio",
+  "isRead": true,
+  "createdAt": {
+    "$date": "2024-09-22T20:42:43.470Z"
+  },
+  "__v": 0
+}]

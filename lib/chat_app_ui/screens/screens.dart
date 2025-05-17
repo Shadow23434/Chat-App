@@ -10,3 +10,4 @@ export 'profiles/own_profile_screen.dart';
 export 'profiles/profile_screen.dart';
 export 'profiles/edit_profile.dart';
 export 'home_screen.dart';
+export 'not_found_screen.dart';

@@ -1,0 +1,72 @@
+[{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd01"
+  },
+  "storyId": {
+    "$oid": "680870b942f2442d78b2be3b"
+  },
+  "parentCommentId": null,
+  "content": "Looks amazing! Where is this beach?",
+  "createdAt": {
+    "$date": "2025-04-22T09:08:00.000Z"
+  },
+  "likes": 5,
+  "userId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd02"
+  },
+  "storyId": {
+    "$oid": "680870b942f2442d78b2be3b"
+  },
+  "parentCommentId": {
+    "$oid": "67ebbcf38d54e77bc8dccd01"
+  },
+  "content": "Eu lobortis elementum nibh tellus molestie nunc.",
+  "createdAt": {
+    "$date": "2025-04-22T09:13:00.000Z"
+  },
+  "likes": 11,
+  "userId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd03"
+  },
+  "storyId": {
+    "$oid": "680870b942f2442d78b2be3b"
+  },
+  "parentCommentId": {
+    "$oid": "67ebbcf38d54e77bc8dccd01"
+  },
+  "content": "I’ve been there too!",
+  "createdAt": {
+    "$date": "2025-04-22T09:16:00.000Z"
+  },
+  "likes": 0,
+  "userId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccd04"
+  },
+  "storyId": {
+    "$oid": "680870b942f2442d78b2be3b"
+  },
+  "parentCommentId": null,
+  "content": "Beautiful shot! Love the vibes.",
+  "createdAt": {
+    "$date": "2025-04-22T09:20:00.000Z"
+  },
+  "likes": 2,
+  "userId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  }
+}]

@@ -1,0 +1,225 @@
+[{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccc92"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "createdAt": {
+    "$date": "2024-12-16T19:03:11.106Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccc94"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf38d54e77bc8dccc88"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "createdAt": {
+    "$date": "2024-12-29T09:00:43.240Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccc96"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "createdAt": {
+    "$date": "2025-01-21T07:10:44.722Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccc98"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "createdAt": {
+    "$date": "2024-11-15T21:57:13.116Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccc9a"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "createdAt": {
+    "$date": "2024-10-12T20:05:46.759Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccc9c"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "createdAt": {
+    "$date": "2024-07-26T10:55:12.807Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccc9e"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "createdAt": {
+    "$date": "2025-03-09T23:57:43.075Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccca0"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "createdAt": {
+    "$date": "2025-03-08T16:32:15.922Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccca2"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "createdAt": {
+    "$date": "2024-12-31T13:12:05.381Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccca4"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf28d54e77bc8dccc82"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "createdAt": {
+    "$date": "2024-07-19T01:26:55.967Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccca6"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf38d54e77bc8dccc88"
+  },
+  "createdAt": {
+    "$date": "2024-10-12T09:13:18.244Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dccca8"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "createdAt": {
+    "$date": "2024-05-08T22:42:37.255Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccaa"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "createdAt": {
+    "$date": "2024-09-08T16:33:29.470Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccac"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf28d54e77bc8dccc7e"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf28d54e77bc8dccc82"
+  },
+  "createdAt": {
+    "$date": "2025-01-24T07:45:36.402Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ebbcf38d54e77bc8dcccae"
+  },
+  "participantOneId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "participantTwoId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8a"
+  },
+  "createdAt": {
+    "$date": "2024-06-10T05:58:12.581Z"
+  },
+  "__v": 0
+}]

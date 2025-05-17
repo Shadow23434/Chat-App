@@ -1,4 +1,4 @@
-import 'package:chat_app/admin_panel_ui/screens/home_screen.dart';
+import 'package:chat_app/admin_panel_ui/screens/admin_home_screen.dart';
 import 'package:chat_app/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +14,9 @@ class AccountInfo extends StatelessWidget {
       appBar: AppBar(),
       body: Center(
         child: InkWell(
-          onTap: () => Navigator.of(context).pushReplacement(HomeScreen.route),
+          onTap:
+              () =>
+                  Navigator.of(context).pushReplacement(AdminHomeScreen.route),
           child: Icon(Icons.home),
         ),
       ),

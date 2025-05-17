@@ -1,0 +1,100 @@
+[{
+  "_id": {
+    "$oid": "6807ba0bfb1d3a96c3e2eabb"
+  },
+  "callerId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  },
+  "receiverId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "status": "received",
+  "duration": 120,
+  "startedAt": {
+    "$date": "2025-04-22T10:00:00.000Z"
+  },
+  "endedAt": {
+    "$date": "2025-04-22T10:02:00.000Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-22T10:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-22T10:02:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6807ba0bfb1d3a96c3e2eabc"
+  },
+  "callerId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8e"
+  },
+  "receiverId": {
+    "$oid": "67ebbcf38d54e77bc8dccc8c"
+  },
+  "status": "missed",
+  "duration": 0,
+  "startedAt": {
+    "$date": "2025-04-21T15:30:00.000Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-21T15:30:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-21T15:30:00.000Z"
+  },
+  "endedAt": {
+    "$date": "2025-04-21T15:30:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6807ba0bfb1d3a96c3e2eabd"
+  },
+  "callerId": {
+    "$oid": "67ebbcf28d54e77bc8dccc80"
+  },
+  "receiverId": {
+    "$oid": "67ebbcf28d54e77bc8dccc84"
+  },
+  "status": "received",
+  "duration": 300,
+  "startedAt": {
+    "$date": "2025-04-20T09:00:00.000Z"
+  },
+  "endedAt": {
+    "$date": "2025-04-20T09:00:00.000Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-20T09:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-20T09:05:00.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6807ba0bfb1d3a96c3e2eabe"
+  },
+  "callerId": {
+    "$oid": "67ebbcf38d54e77bc8dccc90"
+  },
+  "receiverId": {
+    "$oid": "67ebbcf28d54e77bc8dccc86"
+  },
+  "status": "missed",
+  "duration": 0,
+  "startedAt": {
+    "$date": "2025-04-19T14:00:00.000Z"
+  },
+  "endedAt": {
+    "$date": "2025-04-21T15:30:00.000Z"
+  },
+  "createdAt": {
+    "$date": "2025-04-19T14:00:00.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-19T14:00:00.000Z"
+  }
+}]

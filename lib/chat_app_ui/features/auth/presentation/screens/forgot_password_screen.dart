@@ -32,6 +32,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       BlocProvider.of<AuthBloc>(
         context,
       ).add(ForgotPasswordEvent(email: _emailController.text.trim()));
+
+      Navigator.pushNamed(context, '/waiting-reset');
     }
   }
 
@@ -53,7 +55,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               Header(
                 heading: 'Forgot password',
                 subtitle:
-                    'Please enter your email to reset the password. We will send a reset link to your email',
+                    'Please enter your email to reset the password. We will send a reset link to you',
                 crossAxisAlignment: CrossAxisAlignment.start,
                 textAlign: TextAlign.start,
               ),
