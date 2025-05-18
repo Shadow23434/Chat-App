@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:chat_app/admin_panel_ui/models/chats.dart';
+import 'package:chat_app/admin_panel_ui/models/chats.dart' as chat_models;
 import 'package:chat_app/admin_panel_ui/models/messages.dart';
 import 'package:chat_app/admin_panel_ui/models/users.dart';
 import 'package:intl/intl.dart';
@@ -17,7 +17,7 @@ class DemoDataService {
   List<Map<String, dynamic>>? _rawUsers;
   List<Map<String, dynamic>>? _rawMessages;
 
-  List<Chat>? _processedChats;
+  List<chat_models.Chat>? _processedChats;
   List<User>? _processedUsers;
   Map<String, List<Message>>? _processedMessages;
 
@@ -134,9 +134,27 @@ class DemoDataService {
         }).toList();
   }
 
+  // Create chat_models.User from original User
+  chat_models.User _createChatUser(User user) {
+    return chat_models.User(
+      id: user.id,
+      name: user.username,
+      email: user.email,
+      avatarUrl: user.profilePic,
+      lastLogin: user.lastLogin,
+    );
+  }
+
   // Process chats into Chat objects
   void _processChats() {
-    if (_rawChats == null || _rawUsers == null || _rawMessages == null) return;
+    if (_rawChats == null ||
+        _rawUsers == null ||
+        _rawMessages == null ||
+        _processedUsers == null ||
+        _processedMessages == null) {
+      debugPrint('Missing required data for processing chats');
+      return;
+    }
 
     _processedChats =
         _rawChats!.map((chatData) {
@@ -154,8 +172,46 @@ class DemoDataService {
           // Get latest message
           final latestMessage = _getLatestMessage(chatId);
 
+          // Get participants
+          List<chat_models.User> participants = [];
+          if (_processedUsers != null) {
+            try {
+              final user1Model = _processedUsers!.firstWhere(
+                (u) => u.id == participant1Id,
+              );
+              final user2Model = _processedUsers!.firstWhere(
+                (u) => u.id == participant2Id,
+              );
+              participants = [
+                _createChatUser(user1Model),
+                _createChatUser(user2Model),
+              ];
+            } catch (e) {
+              debugPrint('Error finding participants: $e');
+            }
+          }
+
+          // Get messages for this chat
+          List<chat_models.Message> chatMessages = [];
+          if (_processedMessages != null &&
+              _processedMessages!.containsKey(chatId)) {
+            chatMessages =
+                _processedMessages![chatId]!
+                    .map(
+                      (m) => chat_models.Message(
+                        id: m.id,
+                        senderId: m.senderId,
+                        content: m.content,
+                        timestamp: m.timestamp,
+                        type: m.type,
+                        isRead: m.isRead,
+                      ),
+                    )
+                    .toList();
+          }
+
           // Create Chat object
-          return Chat(
+          return chat_models.Chat(
             id: chatId,
             title: user2 != null ? user2['username'] : 'Unknown User',
             lastMessage:
@@ -173,6 +229,8 @@ class DemoDataService {
                     ? user2['profilePic']
                     : 'https://via.placeholder.com/150',
             unreadCount: _getUnreadCount(chatId, participant1Id),
+            participants: participants,
+            messages: chatMessages,
           );
         }).toList();
   }
@@ -243,7 +301,7 @@ class DemoDataService {
   }
 
   // Get all chats
-  Future<List<Chat>> getChats() async {
+  Future<List<chat_models.Chat>> getChats() async {
     if (_processedChats == null) {
       await loadAllData();
     }
@@ -295,32 +353,49 @@ class DemoDataService {
     _processMessages();
   }
 
-  // Delete a message
-  Future<void> deleteMessage(String messageId) async {
-    // In a real app, this would delete from the database
-    // For demo purposes, we'll just update our local data
-    if (_rawMessages == null) return;
-
-    _rawMessages!.removeWhere((msg) => msg['_id']['\$oid'] == messageId);
-
-    // Re-process messages
-    _processMessages();
-  }
-
   // Delete a chat
   Future<void> deleteChat(String chatId) async {
-    // In a real app, this would delete from the database
-    // For demo purposes, we'll just update our local data
-    if (_rawChats == null || _rawMessages == null) return;
+    // In a real app, this would be an API call
+    await Future.delayed(const Duration(milliseconds: 500));
 
-    // Remove chat
-    _rawChats!.removeWhere((chat) => chat['_id']['\$oid'] == chatId);
+    if (_processedChats != null) {
+      _processedChats!.removeWhere((chat) => chat.id == chatId);
+    }
 
-    // Remove all messages for this chat
-    _rawMessages!.removeWhere((msg) => msg['chatId']['\$oid'] == chatId);
+    if (_processedMessages != null) {
+      _processedMessages!.remove(chatId);
+    }
+  }
 
-    // Re-process chats and messages
-    _processChats();
-    _processMessages();
+  // Delete a message
+  Future<void> deleteMessage(String chatId, String messageId) async {
+    // In a real app, this would be an API call
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    if (_processedMessages != null && _processedMessages!.containsKey(chatId)) {
+      _processedMessages![chatId]!.removeWhere(
+        (message) => message.id == messageId,
+      );
+
+      // Update the last message in the chat if needed
+      if (_processedChats != null) {
+        final chatIndex = _processedChats!.indexWhere(
+          (chat) => chat.id == chatId,
+        );
+        if (chatIndex >= 0 && _processedMessages![chatId]!.isNotEmpty) {
+          final lastMsg = _processedMessages![chatId]!.last;
+          _processedChats![chatIndex] = chat_models.Chat(
+            id: _processedChats![chatIndex].id,
+            title: _processedChats![chatIndex].title,
+            lastMessage: lastMsg.type == 'image' ? '📷 Image' : lastMsg.content,
+            timestamp: lastMsg.timestamp,
+            avatarUrl: _processedChats![chatIndex].avatarUrl,
+            unreadCount: _processedChats![chatIndex].unreadCount,
+            participants: _processedChats![chatIndex].participants,
+            messages: _processedChats![chatIndex].messages,
+          );
+        }
+      }
+    }
   }
 }

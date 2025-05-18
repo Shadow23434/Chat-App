@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:chat_app/admin_panel_ui/models/chats.dart';
-import 'package:chat_app/admin_panel_ui/models/messages.dart';
-import 'package:chat_app/admin_panel_ui/services/demo_data_service.dart';
-import 'package:chat_app/admin_panel_ui/screens/chat_analytics.dart';
+import 'package:chat_app/admin_panel_ui/models/chats.dart' as chat_models;
+import 'package:chat_app/admin_panel_ui/services/demo_data.dart';
+import 'package:chat_app/theme.dart';
 
 class ChatDetails extends StatefulWidget {
-  final Chat chat;
+  final chat_models.Chat chat;
 
   const ChatDetails({super.key, required this.chat});
 
@@ -14,11 +13,11 @@ class ChatDetails extends StatefulWidget {
 }
 
 class _ChatDetailsState extends State<ChatDetails> {
-  final DemoDataService _dataService = DemoDataService();
+  final DemoData _demoData = DemoData();
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  List<Message> messages = [];
+  List<chat_models.Message> messages = [];
   bool isLoading = true;
   bool isSending = false;
 
@@ -41,7 +40,7 @@ class _ChatDetailsState extends State<ChatDetails> {
     });
 
     try {
-      final chatMessages = await _dataService.getMessages(widget.chat.id);
+      final chatMessages = await _demoData.getMessages(widget.chat.id);
       setState(() {
         messages = chatMessages;
         isLoading = false;
@@ -67,13 +66,13 @@ class _ChatDetailsState extends State<ChatDetails> {
 
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
+      SnackBar(content: Text(message), backgroundColor: AppColors.accent),
     );
   }
 
   Future<void> _deleteMessage(String messageId) async {
     try {
-      await _dataService.deleteMessage(messageId);
+      await _demoData.deleteMessage(widget.chat.id, messageId);
       await _loadMessages();
       ScaffoldMessenger.of(
         context,
@@ -85,17 +84,80 @@ class _ChatDetailsState extends State<ChatDetails> {
 
   Future<void> _deleteChat() async {
     try {
-      await _dataService.deleteChat(widget.chat.id);
+      await _demoData.deleteChat(widget.chat.id);
       Navigator.pop(context, 'deleted');
     } catch (e) {
       _showErrorSnackBar('Failed to delete chat: $e');
     }
   }
 
-  void _navigateToAnalytics() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ChatAnalytics(chat: widget.chat)),
+  void _showParticipantsList() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text('Participants'),
+            content: SizedBox(
+              width: 300,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: widget.chat.participants.length,
+                itemBuilder: (context, index) {
+                  final participant = widget.chat.participants[index];
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(participant.avatarUrl),
+                    ),
+                    title: Text(participant.name),
+                    subtitle: Text(participant.lastLogin),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showUserDetails(participant);
+                    },
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showUserDetails(chat_models.User user) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text('User Details'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: CircleAvatar(
+                    radius: 40,
+                    backgroundImage: NetworkImage(user.avatarUrl),
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text('Name: ${user.name}'),
+                Text('Email: ${user.email}'),
+                if (user.lastLogin.isNotEmpty)
+                  Text('Last Login: ${user.lastLogin}'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
     );
   }
 
@@ -103,165 +165,52 @@ class _ChatDetailsState extends State<ChatDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
-        title: Text(widget.chat.title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.analytics_outlined),
-            tooltip: 'Chat Analytics',
-            onPressed: _navigateToAnalytics,
-          ),
-          _buildContextMenu(),
-        ],
+        backgroundColor: AppColors.secondary,
+        title: Text(
+          'Chat Details',
+          style: TextStyle(color: AppColors.textLight),
+        ),
+        actions: [_buildContextMenu()],
+        actionsPadding: EdgeInsets.only(right: 16),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.indigo.shade50, Colors.white],
+      body: Column(
+        children: [
+          Expanded(
+            child:
+                isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildMessageList(),
           ),
-        ),
-        child: Column(
-          children: [
-            _buildChatInfo(),
-            const Divider(height: 1),
-            Expanded(
-              child:
-                  isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _buildMessageList(),
-            ),
-            _buildMessageInput(),
-          ],
-        ),
+        ],
       ),
     );
   }
 
   Widget _buildContextMenu() {
-    return PopupMenuButton<String>(
-      icon: const Icon(Icons.more_vert),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      onSelected: (value) {
-        switch (value) {
-          case 'view_details':
-            _navigateToAnalytics();
-            break;
-          case 'delete':
-            _showDeleteChatConfirmation();
-            break;
-        }
-      },
-      itemBuilder:
-          (context) => [
-            const PopupMenuItem(
-              value: 'view_details',
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline),
-                  SizedBox(width: 8),
-                  Text('View Details'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'delete',
-              child: Row(
-                children: [
-                  Icon(Icons.delete_outline, color: Colors.red),
-                  SizedBox(width: 8),
-                  Text('Delete Chat', style: TextStyle(color: Colors.red)),
-                ],
-              ),
-            ),
-          ],
-    );
-  }
-
-  Widget _buildChatInfo() {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.indigo.shade200, width: 2),
-              shape: BoxShape.circle,
-            ),
-            padding: const EdgeInsets.all(2),
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(widget.chat.avatarUrl),
-              radius: 30,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.chat.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Last active: ${widget.chat.timestamp}',
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color:
-                  widget.chat.unreadCount > 0
-                      ? Colors.indigo.shade100
-                      : Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              '${messages.length} messages',
-              style: TextStyle(
-                color:
-                    widget.chat.unreadCount > 0
-                        ? Colors.indigo
-                        : Colors.grey.shade700,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
+    return Row(
+      children: [
+        Text(
+          '${widget.chat.messages.length}',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        SizedBox(width: 4),
+        Icon(Icons.message, color: Colors.white),
+        SizedBox(width: 16),
+        Text(
+          '${widget.chat.participants.length}',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        SizedBox(width: 4),
+        InkWell(
+          onTap: _showParticipantsList,
+          child: Icon(Icons.people, color: Colors.white),
+        ),
+        SizedBox(width: 16),
+        InkWell(
+          onTap: _showDeleteChatConfirmation,
+          child: Icon(Icons.delete_outline, color: AppColors.accent),
+        ),
+      ],
     );
   }
 
@@ -304,13 +253,16 @@ class _ChatDetailsState extends State<ChatDetails> {
         );
   }
 
-  bool _shouldShowDateSeparator(Message previous, Message current) {
+  bool _shouldShowDateSeparator(
+    chat_models.Message previous,
+    chat_models.Message current,
+  ) {
     // This is a simplified implementation
     // In a real app, you would parse the timestamp and compare dates
     return previous.id.substring(0, 5) != current.id.substring(0, 5);
   }
 
-  Widget _buildDateSeparator(Message message) {
+  Widget _buildDateSeparator(chat_models.Message message) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Row(
@@ -321,12 +273,16 @@ class _ChatDetailsState extends State<ChatDetails> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.indigo.shade50,
+                color: AppColors.secondary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
                 message.timestamp,
-                style: TextStyle(color: Colors.indigo.shade700, fontSize: 12),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.secondary,
+                  fontSize: 12,
+                ),
               ),
             ),
           ),
@@ -336,7 +292,7 @@ class _ChatDetailsState extends State<ChatDetails> {
     );
   }
 
-  Widget _buildMessageItem(Message message) {
+  Widget _buildMessageItem(chat_models.Message message) {
     final bool isCurrentUser = message.senderId == 'user_1';
 
     return Padding(
@@ -362,16 +318,11 @@ class _ChatDetailsState extends State<ChatDetails> {
                 vertical: 10.0,
               ),
               decoration: BoxDecoration(
-                color: isCurrentUser ? Colors.indigo.shade100 : Colors.white,
+                color:
+                    isCurrentUser
+                        ? AppColors.secondary.withOpacity(0.1)
+                        : AppColors.cardView,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 3,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -382,7 +333,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
-                        color: Colors.indigo.shade700,
+                        color: AppColors.secondary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -411,7 +362,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                                                 .cumulativeBytesLoaded /
                                             loadingProgress.expectedTotalBytes!
                                         : null,
-                                color: Colors.indigo,
+                                color: AppColors.secondary,
                               ),
                             ),
                           );
@@ -449,7 +400,8 @@ class _ChatDetailsState extends State<ChatDetails> {
                       Icon(
                         message.isRead ? Icons.done_all : Icons.done,
                         size: 14,
-                        color: message.isRead ? Colors.blue : Colors.grey,
+                        color:
+                            message.isRead ? AppColors.secondary : Colors.grey,
                       ),
                     ],
                   ),
@@ -475,9 +427,16 @@ class _ChatDetailsState extends State<ChatDetails> {
                     value: 'delete',
                     child: Row(
                       children: [
-                        Icon(Icons.delete_outline, color: Colors.red, size: 16),
+                        Icon(
+                          Icons.delete_outline,
+                          color: AppColors.accent,
+                          size: 16,
+                        ),
                         SizedBox(width: 8),
-                        Text('Delete', style: TextStyle(color: Colors.red)),
+                        Text(
+                          'Delete',
+                          style: TextStyle(color: AppColors.accent),
+                        ),
                       ],
                     ),
                   ),
@@ -488,88 +447,7 @@ class _ChatDetailsState extends State<ChatDetails> {
     );
   }
 
-  Widget _buildMessageInput() {
-    return Container(
-      padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, -1),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          IconButton(
-            icon: Icon(Icons.attach_file, color: Colors.indigo.shade400),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('File attachment coming soon')),
-              );
-            },
-          ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: TextField(
-                controller: _messageController,
-                decoration: const InputDecoration(
-                  hintText: 'Admin: Type a message...',
-                  border: InputBorder.none,
-                ),
-                minLines: 1,
-                maxLines: 5,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.indigo,
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon:
-                  isSending
-                      ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
-                          ),
-                        ),
-                      )
-                      : const Icon(Icons.send, color: Colors.white),
-              onPressed:
-                  isSending
-                      ? null
-                      : () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Sending messages as admin coming soon',
-                            ),
-                          ),
-                        );
-                      },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showDeleteMessageConfirmation(Message message) {
+  void _showDeleteMessageConfirmation(chat_models.Message message) {
     showDialog(
       context: context,
       builder:
@@ -590,7 +468,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                 },
                 child: const Text(
                   'Delete',
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(color: AppColors.accent),
                 ),
               ),
             ],
@@ -605,7 +483,7 @@ class _ChatDetailsState extends State<ChatDetails> {
           (context) => AlertDialog(
             title: const Text('Delete Chat'),
             content: Text(
-              'Are you sure you want to delete the chat with ${widget.chat.title}?',
+              'Are you sure you want to delete the chat with ID: ${widget.chat.id}?',
             ),
             actions: [
               TextButton(
@@ -619,7 +497,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                 },
                 child: const Text(
                   'Delete',
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(color: AppColors.accent),
                 ),
               ),
             ],

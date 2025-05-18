@@ -36,7 +36,7 @@ class _EditUserState extends State<EditUser> {
   final GlobalKey<FormState> _passwordFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _profilePicFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _phoneNumberFormKey = GlobalKey<FormState>();
-  final List<String> gender = ['Male', 'Female', 'Unknown'];
+  final List<String> gender = ['male', 'female', 'unknown'];
   String? _selectedGender;
   bool _showErrors = false;
 
@@ -58,7 +58,15 @@ class _EditUserState extends State<EditUser> {
   @override
   void initState() {
     super.initState();
-    _selectedGender = widget.gender;
+    // Convert the gender string to lowercase to match our dropdown items
+    _selectedGender = widget.gender.toLowerCase();
+
+    // Initialize the text controllers with the widget values
+    _userNameController.text = widget.username;
+    _emailController.text = widget.email;
+    _passwordController.text = widget.password;
+    _profilePicController.text = widget.profilePic;
+    _phoneNumberController.text = widget.phone;
   }
 
   @override
@@ -67,6 +75,7 @@ class _EditUserState extends State<EditUser> {
     _emailController.dispose();
     _passwordController.dispose();
     _phoneNumberController.dispose();
+    _profilePicController.dispose();
     super.dispose();
   }
 
@@ -140,7 +149,11 @@ class _EditUserState extends State<EditUser> {
                           gender.map((String item) {
                             return DropdownMenuItem<String>(
                               value: item,
-                              child: Text(item, style: TextStyle(fontSize: 14)),
+                              child: Text(
+                                item.substring(0, 1).toUpperCase() +
+                                    item.substring(1),
+                                style: TextStyle(fontSize: 14),
+                              ),
                             );
                           }).toList(),
                       onChanged: (String? newValue) {

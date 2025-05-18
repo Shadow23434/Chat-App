@@ -20,4 +20,18 @@ class User {
     required this.lastLogin,
     required this.createdAt,
   });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['_id']['\$oid'],
+      username: json['username'],
+      email: json['email'],
+      profilePic: json['profilePic'],
+      gender: json['gender'],
+      phoneNumber: json['phoneNumber'],
+      isVerified: json['isVerified'],
+      lastLogin: json['lastLogin'],
+      createdAt: json['createdAt'],
+    );
+  }
 }

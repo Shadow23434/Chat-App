@@ -43,13 +43,6 @@ class ProcessCard extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 0),
                     child: IconNoBorder(icon: icon, onTap: () {}),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 0),
-                    child: IconNoBorder(
-                      icon: Icons.more_vert_rounded,
-                      onTap: () {},
-                    ),
-                  ),
                 ],
               ),
               Text(

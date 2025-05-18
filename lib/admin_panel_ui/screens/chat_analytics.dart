@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:chat_app/admin_panel_ui/models/chats.dart';
-import 'package:chat_app/admin_panel_ui/models/messages.dart';
-import 'package:chat_app/admin_panel_ui/services/demo_data_service.dart';
+import 'package:chat_app/admin_panel_ui/models/chats.dart' as chat_models;
+import 'package:chat_app/admin_panel_ui/services/demo_data.dart';
 
 class ChatAnalytics extends StatefulWidget {
-  final Chat chat;
+  final chat_models.Chat chat;
 
   const ChatAnalytics({super.key, required this.chat});
 
@@ -14,9 +13,9 @@ class ChatAnalytics extends StatefulWidget {
 }
 
 class _ChatAnalyticsState extends State<ChatAnalytics> {
-  final DemoDataService _dataService = DemoDataService();
+  final DemoData _demoData = DemoData();
   bool isLoading = true;
-  List<Message> messages = [];
+  List<chat_models.Message> messages = [];
   Map<String, int> messageTypeCount = {};
   Map<String, int> messagesByDay = {};
   double averageResponseTime = 0;
@@ -37,7 +36,7 @@ class _ChatAnalyticsState extends State<ChatAnalytics> {
 
     try {
       // Load messages for this chat
-      final chatMessages = await _dataService.getMessages(widget.chat.id);
+      final chatMessages = await _demoData.getMessages(widget.chat.id);
 
       // Process data for analytics
       _processMessageData(chatMessages);
@@ -54,7 +53,7 @@ class _ChatAnalyticsState extends State<ChatAnalytics> {
     }
   }
 
-  void _processMessageData(List<Message> chatMessages) {
+  void _processMessageData(List<chat_models.Message> chatMessages) {
     // Reset counters
     messageTypeCount = {'text': 0, 'image': 0, 'audio': 0};
     messagesByDay = {};

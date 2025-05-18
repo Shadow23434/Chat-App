@@ -7,7 +7,7 @@ import 'package:chat_app/theme.dart';
 class AdminHomeScreen extends StatefulWidget {
   static Route get route =>
       MaterialPageRoute(builder: (context) => AdminHomeScreen());
-  AdminHomeScreen({super.key});
+  const AdminHomeScreen({super.key});
 
   @override
   State<AdminHomeScreen> createState() => _AdminHomeScreenState();
@@ -17,13 +17,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final ValueNotifier<int> pageIndex = ValueNotifier(0);
   final ValueNotifier<String> title = ValueNotifier('Users');
 
-  final List<Widget> pages = const [
-    UsersPage(),
-    ChatPage(),
-    StoriesPage(),
-    CallsPage(),
-    HelpPage(),
-  ];
+  // Cache for page instances to maintain state
+  final Map<int, Widget> _pageCache = {};
+
+  // Initialize the page widgets with an empty container for lazy loading
+  late final List<Widget> pages;
 
   final List<String> pageTitles = const [
     'Users',
@@ -44,8 +42,49 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   @override
   void initState() {
     super.initState();
+    // Initialize pages list with page builder functions
+    _initPages();
     // Set initial page based on current route
     _initPageFromRoute();
+  }
+
+  void _initPages() {
+    // Create page widgets on demand to preserve state
+    pages = List.generate(5, (index) => _buildLazyPage(index));
+  }
+
+  // Build a page only when it's accessed for the first time
+  Widget _buildLazyPage(int index) {
+    // Return from cache if exists
+    if (_pageCache.containsKey(index)) {
+      return _pageCache[index]!;
+    }
+
+    // Create and cache page based on index
+    Widget page;
+    switch (index) {
+      case 0:
+        page = const UsersPage();
+        break;
+      case 1:
+        page = const ChatPage();
+        break;
+      case 2:
+        page = const StoriesPage();
+        break;
+      case 3:
+        page = const CallsPage();
+        break;
+      case 4:
+        page = const HelpPage();
+        break;
+      default:
+        page = const Center(child: Text('Page not found'));
+    }
+
+    // Cache the page instance for future use
+    _pageCache[index] = page;
+    return page;
   }
 
   void _initPageFromRoute() {
@@ -89,7 +128,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             child: ValueListenableBuilder(
               valueListenable: pageIndex,
               builder: (BuildContext context, int value, _) {
-                return pages[value];
+                // Using IndexedStack to preserve state of all pages
+                return IndexedStack(index: value, children: pages);
               },
             ),
           ),
