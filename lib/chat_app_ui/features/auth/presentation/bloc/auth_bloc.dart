@@ -41,9 +41,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onRegister(RegisterEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      await registerUseCase.call(event.username, event.email, event.password);
-
-      emit(AuthSuccess(message: 'Registration successful'));
+      final user = await registerUseCase.call(
+        event.username,
+        event.email,
+        event.password,
+      );
+      emit(AuthInitial());
     } catch (e) {
       emit(AuthFailure(error: 'Registration failed'));
       print(e.toString());
@@ -55,8 +58,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final user = await loginUseCase.call(event.email, event.password);
       await _storage.write(key: 'token', value: user.token);
-
-      emit(AuthSuccess(message: 'Login successful'));
+      print(user.email);
+      emit(AuthSuccess(message: 'Login successful', user: user));
     } catch (e) {
       emit(AuthFailure(error: 'Login failed'));
       print(e.toString());
@@ -66,9 +69,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onSignout(SignoutEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      await signoutUseCase.call();
+      await _storage.delete(key: 'token');
 
-      emit(AuthSuccess(message: 'Sign out successful'));
+      emit(AuthSignedOut());
     } catch (e) {
       emit(AuthFailure(error: 'Sign out failed'));
     }
@@ -82,7 +85,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await verifyEmailUseCase.call(event.verificationToken);
 
-      emit(AuthSuccess(message: 'Verify email successful'));
+      emit(EmailVerificationSuccess());
     } catch (e) {
       emit(AuthFailure(error: 'Verify email failed'));
       print(e.toString());
@@ -97,7 +100,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await forgotPasswordUseCase.call(event.email);
 
-      emit(AuthSuccess(message: 'Forgot password request successful'));
+      emit(
+        ForgotPasswordSuccess(message: 'Forgot password request successful'),
+      );
     } catch (e) {
       emit(AuthFailure(error: 'Forgot password request failed'));
       print(e.toString());
@@ -130,7 +135,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await resetPasswordUseCase.call(event.token, event.newPassword);
 
-      emit(AuthSuccess(message: 'Password reset successfully'));
+      emit(ResetPasswordSuccess(message: 'Password reset successfully'));
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
     }

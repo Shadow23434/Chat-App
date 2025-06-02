@@ -9,14 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 
 class CallsPage extends StatelessWidget {
-  const CallsPage({super.key});
+  CallsPage({super.key});
 
+  List<UserModel> users = Helpers.users;
   List<Call> _generateSortedCallData() {
     List<Call> calls = List.generate(
       20,
       (_) => Call(
         id: faker.faker.guid.guid(),
-        caller: users[Random().nextInt(users.length)],
+        caller: Helpers.users[Random().nextInt(Helpers.users.length)],
         receiver: users[Random().nextInt(users.length)],
         status: faker.faker.randomGenerator.boolean() ? 'missed' : 'received',
         duration: faker.faker.randomGenerator.integer(60),

@@ -7,6 +7,8 @@ import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
+import 'package:chat_app/core/theme/theme_notifier.dart';
 
 class OwnProfileScreen extends StatelessWidget {
   static Route get route =>
@@ -23,7 +25,15 @@ class OwnProfileScreen extends StatelessWidget {
           // Avatar Container
           Hero(
             tag: 'hero-profile-picture',
-            child: Avatar.large(url: defaultAvatarUrl),
+            child: BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                if (state is AuthSuccess) {
+                  return Avatar.large(url: state.user.profilePic);
+                } else {
+                  return Avatar.large(url: defaultAvatarUrl);
+                }
+              },
+            ),
           ),
           Info(),
           SettingList(),
@@ -56,7 +66,6 @@ class SignoutButton extends StatelessWidget {
         },
         listener: (context, state) {
           if (state is AuthSuccess) {
-            Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               customSnackBar(
@@ -66,6 +75,9 @@ class SignoutButton extends StatelessWidget {
                 AppColors.accent,
               ),
             );
+          } else if (state is AuthSignedOut) {
+            // Navigate to login screen and remove all previous routes
+            Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
           }
         },
       ),
@@ -79,16 +91,33 @@ class Info extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        children: [
-          Text(currentUser.username),
-          SizedBox(height: 4),
-          Text(
-            currentUser.email,
-            style: TextStyle(color: AppColors.textFaded, fontSize: 13),
-          ),
-        ],
+      padding: const EdgeInsets.all(8.0),
+      child: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          if (state is AuthSuccess) {
+            return Column(
+              children: [
+                Text(state.user.username),
+                SizedBox(height: 4),
+                Text(
+                  state.user.email,
+                  style: TextStyle(color: AppColors.textFaded, fontSize: 13),
+                ),
+              ],
+            );
+          } else {
+            return Column(
+              children: [
+                Text('Loading...'),
+                SizedBox(height: 4),
+                Text(
+                  '',
+                  style: TextStyle(color: AppColors.textFaded, fontSize: 13),
+                ),
+              ],
+            );
+          }
+        },
       ),
     );
   }
@@ -179,24 +208,26 @@ class _SettingItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        InkWell(
-          onTap: hasButton || hasMenu ? null : onTap,
-          borderRadius: BorderRadius.circular(8),
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.circularIcon,
-                    shape: BoxShape.circle,
+        Expanded(
+          child: InkWell(
+            onTap: hasButton || hasMenu ? null : onTap,
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.circularIcon,
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconBackGround(icon: icon, circularBorder: true),
                   ),
-                  child: IconBackGround(icon: icon, circularBorder: true),
-                ),
-                SizedBox(width: 12),
-                Text(name),
-              ],
+                  SizedBox(width: 12),
+                  Text(name),
+                ],
+              ),
             ),
           ),
         ),
@@ -204,7 +235,7 @@ class _SettingItem extends StatelessWidget {
             ? _LanguageMenu()
             : hasButton
             ? _DarkModeSwitch()
-            : SizedBox(),
+            : SizedBox.shrink(),
       ],
     );
   }
@@ -268,26 +299,107 @@ class _DarkModeSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 12),
-      child: Transform.scale(
-        scale: 0.8,
-        child: Switch(
-          value: true,
-          onChanged: (bool value) {},
-          activeColor: AppColors.secondary,
-          activeTrackColor: Colors.transparent,
-          inactiveTrackColor: Colors.transparent,
-          inactiveThumbColor: Theme.of(context).iconTheme.color,
-          trackOutlineColor: WidgetStateProperty.resolveWith((
-            Set<WidgetState> states,
-          ) {
-            if (states.contains(WidgetState.selected)) {
-              return AppColors.secondary;
-            }
-            return Theme.of(context).iconTheme.color;
-          }),
-          trackOutlineWidth: WidgetStateProperty.all(2.0),
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
+      child: Consumer<ThemeNotifier>(
+        builder: (context, themeNotifier, child) {
+          return PopupMenuButton<ThemeMode>(
+            icon: Icon(
+              themeNotifier.themeMode == ThemeMode.dark
+                  ? Icons.dark_mode
+                  : themeNotifier.themeMode == ThemeMode.light
+                  ? Icons.light_mode
+                  : Icons.brightness_auto,
+              color: AppColors.secondary,
+            ),
+            onSelected: (ThemeMode mode) async {
+              switch (mode) {
+                case ThemeMode.system:
+                  await themeNotifier.setSystemTheme();
+                  break;
+                case ThemeMode.light:
+                  await themeNotifier.setLightTheme();
+                  break;
+                case ThemeMode.dark:
+                  await themeNotifier.setDarkTheme();
+                  break;
+              }
+            },
+            itemBuilder:
+                (BuildContext context) => <PopupMenuEntry<ThemeMode>>[
+                  PopupMenuItem<ThemeMode>(
+                    value: ThemeMode.system,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.brightness_auto,
+                          color:
+                              themeNotifier.themeMode == ThemeMode.system
+                                  ? AppColors.secondary
+                                  : null,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'System',
+                          style: TextStyle(
+                            color:
+                                themeNotifier.themeMode == ThemeMode.system
+                                    ? AppColors.secondary
+                                    : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem<ThemeMode>(
+                    value: ThemeMode.light,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.light_mode,
+                          color:
+                              themeNotifier.themeMode == ThemeMode.light
+                                  ? AppColors.secondary
+                                  : null,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Light',
+                          style: TextStyle(
+                            color:
+                                themeNotifier.themeMode == ThemeMode.light
+                                    ? AppColors.secondary
+                                    : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem<ThemeMode>(
+                    value: ThemeMode.dark,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.dark_mode,
+                          color:
+                              themeNotifier.themeMode == ThemeMode.dark
+                                  ? AppColors.secondary
+                                  : null,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Dark',
+                          style: TextStyle(
+                            color:
+                                themeNotifier.themeMode == ThemeMode.dark
+                                    ? AppColors.secondary
+                                    : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+          );
+        },
       ),
     );
   }

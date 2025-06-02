@@ -1,81 +1,11 @@
-import 'dart:convert';
+import 'package:chat_app/admin_panel_ui/screens/comments_screen.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:chat_app/theme.dart';
 import 'package:intl/intl.dart';
-import 'package:chat_app/admin_panel_ui/models/models.dart';
-import 'package:chat_app/admin_panel_ui/widget/widgets.dart';
-import 'package:chat_app/admin_panel_ui/services/image_service.dart';
-
-// Define a custom User class specifically for this page to handle the JSON correctly
-class UserData {
-  final String id;
-  final String username;
-  final String email;
-  final String profilePic;
-
-  UserData({
-    required this.id,
-    required this.username,
-    required this.email,
-    required this.profilePic,
-  });
-
-  factory UserData.fromJson(Map<String, dynamic> json) {
-    return UserData(
-      id: json['_id']['\$oid'],
-      username: json['username'],
-      email: json['email'],
-      profilePic: json['profilePic'] ?? '',
-    );
-  }
-}
-
-// Define a custom Comment class to avoid model conflicts
-class CommentData {
-  final String id;
-  final String storyId;
-  final String? parentCommentId;
-  final String content;
-  final DateTime createdAt;
-  final int likes;
-  final String userId;
-  String? username;
-  String? userEmail;
-  String? userProfilePic;
-
-  CommentData({
-    required this.id,
-    required this.storyId,
-    this.parentCommentId,
-    required this.content,
-    required this.createdAt,
-    required this.likes,
-    required this.userId,
-    this.username,
-    this.userEmail,
-    this.userProfilePic,
-  });
-
-  factory CommentData.fromJson(Map<String, dynamic> json) {
-    return CommentData(
-      id: json['_id']?['\$oid'] ?? '',
-      storyId: json['storyId']?['\$oid'] ?? '',
-      parentCommentId:
-          json['parentCommentId'] != null
-              ? json['parentCommentId']['\$oid'] ?? ''
-              : null,
-      content: json['content'] ?? '',
-      createdAt:
-          json['createdAt'] != null && json['createdAt']['\$date'] != null
-              ? DateTime.parse(json['createdAt']['\$date'])
-              : DateTime.now(),
-      likes: json['likes'] ?? 0,
-      userId: json['userId']?['\$oid'] ?? '',
-    );
-  }
-}
+import 'package:chat_app/core/models/index.dart';
+import 'package:chat_app/admin_panel_ui/widgets/widgets.dart';
+import 'package:chat_app/admin_panel_ui/services/index.dart';
 
 class StoriesPage extends StatefulWidget {
   const StoriesPage({super.key});
@@ -87,20 +17,20 @@ class StoriesPage extends StatefulWidget {
 class _StoriesPageState extends State<StoriesPage> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  final StoryService _storyService = StoryService();
   bool _isFocused = false;
   bool _sortAscending = true;
-  List<Story> _stories = [];
-  List<Story> _filteredStories = [];
-  List<UserData> _users = [];
-  List<CommentData> _comments = [];
+  List<StoryModel> _stories = [];
+  List<StoryModel> _filteredStories = [];
   bool _isLoading = true;
-  String _selectedFilter = 'All';
-  Map<String, UserData> _userMap = {};
+  String _selectedFilter = 'all';
+  String _errorMessage = '';
 
   // Pagination variables
   int _currentPage = 1;
   final int _itemsPerPage = 20;
-  List<Story> _paginatedStories = [];
+  int _totalPages = 1;
+  int _totalItems = 0;
 
   @override
   void initState() {
@@ -111,389 +41,199 @@ class _StoriesPageState extends State<StoriesPage> {
         _isFocused = _focusNode.hasFocus;
       });
     });
-    _searchController.addListener(() {
-      _filterStories();
-    });
   }
 
   Future<void> _loadData() async {
     try {
-      // Load users first
-      final String usersResponse = await rootBundle.loadString(
-        'assets/demo_data/users.json',
+      setState(() {
+        _isLoading = true;
+        _errorMessage = '';
+      });
+
+      final result = await _storyService.getStories(
+        page: _currentPage,
+        limit: _itemsPerPage,
+        sort: _sortAscending ? 'asc' : 'desc',
+        search: _searchController.text.toLowerCase(),
+        status: _selectedFilter,
       );
-      final List<dynamic> usersData = json.decode(usersResponse);
-
-      _users = usersData.map((json) => UserData.fromJson(json)).toList();
-      // Create a map for easy lookup
-      _userMap = {for (var user in _users) user.id: user};
-
-      // Then load stories
-      final String storiesResponse = await rootBundle.loadString(
-        'assets/demo_data/stories.json',
-      );
-      final List<dynamic> storiesData = json.decode(storiesResponse);
-
-      _stories = storiesData.map((json) => Story.fromJson(json)).toList();
-
-      // Load comments
-      final String commentsResponse = await rootBundle.loadString(
-        'assets/demo_data/comments.json',
-      );
-      final List<dynamic> commentsData = json.decode(commentsResponse);
-
-      _comments =
-          commentsData.map((json) => CommentData.fromJson(json)).toList();
-
-      // Associate user data with comments
-      for (var comment in _comments) {
-        final userData = _userMap[comment.userId];
-        if (userData != null) {
-          comment.username = userData.username;
-          comment.userEmail = userData.email;
-          comment.userProfilePic = userData.profilePic;
-        }
-      }
 
       setState(() {
+        _stories = result['stories'];
         _filteredStories = List.from(_stories);
+        _totalItems = result['pagination']['total'];
+        _totalPages = result['pagination']['pages'];
         _isLoading = false;
-        // Explicitly update paginated stories after loading data
-        _updatePaginatedStories();
       });
     } catch (e) {
       setState(() {
         _isLoading = false;
+        _errorMessage = e.toString();
       });
-      print('Error loading data: $e');
     }
   }
 
-  List<CommentData> _getCommentsForStory(String storyId) {
-    return _comments.where((comment) => comment.storyId == storyId).toList();
-  }
-
-  String _getUserEmail(String userId) {
-    final user = _userMap[userId];
-    return user?.email ?? 'Unknown User';
-  }
-
-  String? _getUserProfilePic(String userId) {
-    final user = _userMap[userId];
-    return user?.profilePic;
-  }
-
-  void _filterStories() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      if (query.isEmpty) {
-        _filteredStories =
-            _stories.where((story) {
-              if (_selectedFilter == 'All') return true;
-              if (_selectedFilter == 'Active')
-                return story.expiresAt.isAfter(DateTime.now());
-              if (_selectedFilter == 'Expired')
-                return story.expiresAt.isBefore(DateTime.now());
-              return true;
-            }).toList();
-      } else {
-        _filteredStories =
-            _stories.where((story) {
-              // Get the user for this story
-              final user = _userMap[story.userId];
-
-              // Search by caption or user email
-              bool matchesQuery = story.caption.toLowerCase().contains(query);
-              if (user != null) {
-                matchesQuery =
-                    matchesQuery || user.email.toLowerCase().contains(query);
-              }
-
-              bool matchesFilter = true;
-              if (_selectedFilter == 'Active')
-                matchesFilter = story.expiresAt.isAfter(DateTime.now());
-              if (_selectedFilter == 'Expired')
-                matchesFilter = story.expiresAt.isBefore(DateTime.now());
-
-              return matchesQuery && matchesFilter;
-            }).toList();
-      }
-      _sortStories();
-      _updatePaginatedStories();
-    });
-  }
-
-  void _sortStories() {
-    setState(() {
-      _filteredStories.sort((a, b) {
-        return _sortAscending
-            ? a.createdAt.compareTo(b.createdAt)
-            : b.createdAt.compareTo(a.createdAt);
-      });
-      _updatePaginatedStories();
-    });
-  }
-
-  void _updatePaginatedStories() {
-    final int startIndex = (_currentPage - 1) * _itemsPerPage;
-    final int endIndex =
-        startIndex + _itemsPerPage > _filteredStories.length
-            ? _filteredStories.length
-            : startIndex + _itemsPerPage;
-
-    if (startIndex >= _filteredStories.length && _currentPage > 1) {
-      // If current page has no items (e.g., after filtering), go to previous page
-      _currentPage = 1;
-      _updatePaginatedStories();
-      return;
-    }
-
-    _paginatedStories = _filteredStories.sublist(startIndex, endIndex);
-  }
-
-  void _changePage(int page) {
+  void _changePage(int page) async {
+    if (page < 1 || page > _totalPages || page == _currentPage) return;
     setState(() {
       _currentPage = page;
-      _updatePaginatedStories();
+      _isLoading = true;
     });
+    await _loadData();
   }
 
-  int get _totalPages {
-    return (_filteredStories.length / _itemsPerPage).ceil();
-  }
-
-  void _changeFilter(String filter) {
+  void _changeFilter(String filter) async {
     setState(() {
-      _selectedFilter = filter;
-      _filterStories();
+      _selectedFilter = filter.toLowerCase();
+      _currentPage = 1;
+      _isLoading = true;
     });
+    await _loadData();
   }
 
-  void _toggleSort() {
+  void _toggleSort() async {
     setState(() {
       _sortAscending = !_sortAscending;
-      _sortStories();
+      _currentPage = 1;
+      _isLoading = true;
     });
+    await _loadData();
   }
 
-  void _deleteStory(String id) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Delete Story'),
-            content: Text('Are you sure you want to delete this story?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _stories.removeWhere((story) => story.id == id);
-                    _filteredStories.removeWhere((story) => story.id == id);
-                  });
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Story deleted successfully')),
-                  );
-                },
-                child: Text('Delete', style: TextStyle(color: Colors.red)),
-              ),
-            ],
+  Future<void> _deleteStory(String id) async {
+    try {
+      await _storyService.deleteStory(id);
+      await _loadData();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          customSnackBar(
+            'Success',
+            'Story deleted successfully',
+            Icons.check_circle_outline,
+            Colors.green,
           ),
-    );
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to delete story: $e')));
+      }
+    }
   }
 
-  void _viewStoryComments(Story story) {
-    final comments = _getCommentsForStory(story.id);
+  void _viewStoryDetails(StoryModel story) async {
+    try {
+      final storyDetails = story;
 
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Story Comments'),
-            content: Container(
-              width: 500,
-              height: 400, // Fixed height to avoid overflow
-              child:
-                  comments.isEmpty
-                      ? Center(child: Text('No comments for this story'))
-                      : ListView.builder(
-                        itemCount: comments.length,
-                        itemBuilder: (context, index) {
-                          final comment = comments[index];
-                          return _buildCommentItem(comment);
-                        },
-                      ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Close'),
-              ),
-            ],
-          ),
-    );
-  }
+      if (!mounted) return;
 
-  Widget _buildCommentItem(CommentData comment) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      color: AppColors.cardView,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                ImageService.avatarImage(
-                  url: comment.userProfilePic,
-                  radius: 16,
-                ),
-                SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      comment.username ?? 'Unknown User',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      comment.userEmail ?? '',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textFaded,
-                      ),
-                    ),
-                  ],
-                ),
-                Spacer(),
-                Text(
-                  DateFormat('MMM dd, yyyy').format(comment.createdAt),
-                  style: TextStyle(fontSize: 12, color: AppColors.textFaded),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Text(comment.content),
-            SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Icon(Icons.favorite, color: AppColors.accent, size: 14),
-                SizedBox(width: 4),
-                Text('${comment.likes}', style: TextStyle(fontSize: 12)),
-              ],
-            ),
-            comment.parentCommentId != null
-                ? Container(
-                  margin: EdgeInsets.only(top: 8),
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardDark.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
+      // Show the AlertDialog with story details and a button to view comments
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: Text('Story Details'),
+              content: SizedBox(
+                width: 500,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.reply, size: 12, color: AppColors.textFaded),
-                      SizedBox(width: 4),
-                      Text(
-                        'Reply to another comment',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textFaded,
+                      Center(
+                        child: SizedBox(
+                          height: 200,
+                          width: 200,
+                          child: ImageService.optimizedNetworkImage(
+                            url: storyDetails.backgroundUrl,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
+                      ),
+                      SizedBox(height: 16),
+                      _detailItem('ID', storyDetails.id),
+                      _detailItem('Caption', storyDetails.caption),
+                      _detailItem('Media Name', storyDetails.mediaName ?? ''),
+                      _detailItem('Type', storyDetails.type),
+                      _detailItem(
+                        'User Email',
+                        storyDetails.user?.email ?? 'Unknown User',
+                      ),
+                      _detailItem(
+                        'Created',
+                        DateFormat(
+                          'yyyy-MM-dd HH:mm',
+                        ).format(storyDetails.createdAt),
+                      ),
+                      _detailItem(
+                        'Expires',
+                        DateFormat(
+                          'yyyy-MM-dd HH:mm',
+                        ).format(storyDetails.expiresAt),
+                      ),
+                      _detailItem('Likes', storyDetails.likeCount.toString()),
+                      _detailItem(
+                        'Comments',
+                        storyDetails.commentCount.toString(),
+                      ),
+                      _detailItem('Media URL', storyDetails.mediaUrl ?? ''),
+                      _detailItem(
+                        'Background URL',
+                        storyDetails.backgroundUrl ?? '',
+                      ),
+                      _detailItem(
+                        'Status',
+                        storyDetails.isExpired ? 'Expired' : 'Active',
                       ),
                     ],
                   ),
-                )
-                : SizedBox.shrink(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _viewStoryDetails(Story story) {
-    final userEmail = _getUserEmail(story.userId);
-    final commentsCount = _getCommentsForStory(story.id).length;
-
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Story Details'),
-            content: Container(
-              width: 500,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        height: 200,
-                        width: 200,
-                        child: ImageService.optimizedNetworkImage(
-                          url: story.backgroundUrl,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    _detailItem('ID', story.id),
-                    _detailItem('Caption', story.caption),
-                    _detailItem('Media Name', story.mediaName),
-                    _detailItem('Type', story.type),
-                    _detailItem('User Email', userEmail),
-                    _detailItem(
-                      'Created',
-                      DateFormat('yyyy-MM-dd HH:mm').format(story.createdAt),
-                    ),
-                    _detailItem(
-                      'Expires',
-                      DateFormat('yyyy-MM-dd HH:mm').format(story.expiresAt),
-                    ),
-                    _detailItem('Likes', story.likes.toString()),
-                    _detailItem('Comments', commentsCount.toString()),
-                    _detailItem('Media URL', story.mediaUrl),
-                    _detailItem('Background URL', story.backgroundUrl),
-                    _detailItem(
-                      'Status',
-                      story.expiresAt.isAfter(DateTime.now())
-                          ? 'Active'
-                          : 'Expired',
-                    ),
-                  ],
                 ),
               ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Close'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Navigate to CommentsScreen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => CommentScreen(
+                              storyId: storyDetails.id,
+                              storyCaption: storyDetails.caption,
+                            ),
+                      ),
+                    );
+                  },
+                  child: Text('View Comments'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close dialog before deleting
+                    _deleteStory(storyDetails.id);
+                  },
+                  child: Text('Delete', style: TextStyle(color: Colors.red)),
+                ),
+              ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _viewStoryComments(story);
-                },
-                child: Text('View Comments'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Close'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _deleteStory(story.id);
-                },
-                child: Text('Delete', style: TextStyle(color: Colors.red)),
-              ),
-            ],
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          customSnackBar(
+            'Error',
+            'Failed to load story details: $e',
+            Icons.info_outline_rounded,
+            AppColors.accent,
           ),
-    );
+        );
+      }
+    }
   }
 
   Widget _detailItem(String label, String value) {
@@ -515,145 +255,6 @@ class _StoriesPageState extends State<StoriesPage> {
     );
   }
 
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 64,
-        leadingWidth: 100,
-        leading: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Center(
-            child: const Text(
-              'Stories',
-              style: TextStyle(color: AppColors.textLight, fontSize: 24),
-            ),
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(top: 12, right: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Search bar
-                SizedBox(
-                  width: 400,
-                  child: TextFormField(
-                    controller: _searchController,
-                    focusNode: _focusNode,
-                    textAlign: TextAlign.start,
-                    decoration: InputDecoration(
-                      hintText: 'Search by caption or user email',
-                      hintStyle: TextStyle(color: AppColors.textFaded),
-                      suffixIcon: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: IconBorder(
-                          icon: Icons.search_rounded,
-                          color: AppColors.secondary,
-                          size: 20,
-                          onTap: () => _filterStories(),
-                        ),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: AppColors.cardView,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12),
-              ],
-            ),
-          ),
-        ],
-      ),
-      body:
-          _isLoading
-              ? Center(
-                child: CircularProgressIndicator(color: AppColors.secondary),
-              )
-              : Column(
-                children: [
-                  // Filter and sort
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        _filterButton('All', _selectedFilter == 'All'),
-                        SizedBox(width: 8),
-                        _filterButton('Active', _selectedFilter == 'Active'),
-                        SizedBox(width: 8),
-                        _filterButton('Expired', _selectedFilter == 'Expired'),
-                        Spacer(),
-                        IconButton(
-                          icon: Icon(
-                            _sortAscending
-                                ? Icons.arrow_upward
-                                : Icons.arrow_downward,
-                            color: AppColors.secondary,
-                          ),
-                          onPressed: _toggleSort,
-                          tooltip:
-                              _sortAscending ? 'Oldest first' : 'Newest first',
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Stories list
-                  Expanded(
-                    child:
-                        _filteredStories.isEmpty
-                            ? Center(child: Text('No stories found'))
-                            : Column(
-                              children: [
-                                Expanded(
-                                  child: GridView.builder(
-                                    padding: EdgeInsets.all(16),
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 4,
-                                          childAspectRatio: 0.8,
-                                          crossAxisSpacing: 16,
-                                          mainAxisSpacing: 16,
-                                        ),
-                                    itemCount: _paginatedStories.length,
-                                    itemBuilder: (context, index) {
-                                      final story = _paginatedStories[index];
-                                      return _buildStoryCard(story);
-                                    },
-                                  ),
-                                ),
-                                // Pagination controls
-                                if (_filteredStories.length > _itemsPerPage)
-                                  Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: PaginationControls(
-                                      currentPage: _currentPage,
-                                      totalPages: _totalPages,
-                                      onPageChanged: _changePage,
-                                      itemsPerPage: _itemsPerPage,
-                                      totalItems: _filteredStories.length,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                  ),
-                ],
-              ),
-    );
-  }
-
   Widget _filterButton(String label, bool isSelected) {
     return ElevatedButton(
       onPressed: () => _changeFilter(label),
@@ -671,10 +272,8 @@ class _StoriesPageState extends State<StoriesPage> {
     );
   }
 
-  Widget _buildStoryCard(Story story) {
-    final isExpired = story.expiresAt.isBefore(DateTime.now());
-    final userEmail = _getUserEmail(story.userId);
-    final commentsCount = _getCommentsForStory(story.id).length;
+  Widget _buildStoryCard(StoryModel story) {
+    final isExpired = story.isExpired;
 
     return GestureDetector(
       onTap: () => _viewStoryDetails(story),
@@ -747,7 +346,7 @@ class _StoriesPageState extends State<StoriesPage> {
                         ),
                       ),
                     ),
-                  if (commentsCount > 0)
+                  if (story.commentCount > 0)
                     Positioned(
                       left: 8,
                       top: 8,
@@ -765,7 +364,7 @@ class _StoriesPageState extends State<StoriesPage> {
                             Icon(Icons.comment, color: Colors.white, size: 12),
                             SizedBox(width: 4),
                             Text(
-                              '$commentsCount',
+                              '${story.commentCount}',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
@@ -784,7 +383,7 @@ class _StoriesPageState extends State<StoriesPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    story.mediaName,
+                    story.mediaName ?? '',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -798,7 +397,7 @@ class _StoriesPageState extends State<StoriesPage> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    userEmail,
+                    story.user?.email ?? 'Unknown User',
                     style: TextStyle(fontSize: 10, color: AppColors.textFaded),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -816,7 +415,7 @@ class _StoriesPageState extends State<StoriesPage> {
                           ),
                           SizedBox(width: 4),
                           Text(
-                            story.likes.toString(),
+                            story.likeCount.toString(),
                             style: TextStyle(fontSize: 12),
                           ),
                         ],
@@ -836,6 +435,146 @@ class _StoriesPageState extends State<StoriesPage> {
           ],
         ),
       ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 64,
+        leadingWidth: 100,
+        leading: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Center(
+            child: const Text(
+              'Stories',
+              style: TextStyle(color: AppColors.textLight, fontSize: 24),
+            ),
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(top: 12, right: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 400,
+                  child: TextFormField(
+                    controller: _searchController,
+                    focusNode: _focusNode,
+                    textAlign: TextAlign.start,
+                    onFieldSubmitted: (_) => _loadData(),
+                    decoration: InputDecoration(
+                      hintText: 'Search by caption or user email',
+                      hintStyle: TextStyle(color: AppColors.textFaded),
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: IconBorder(
+                          icon: Icons.search_rounded,
+                          color: AppColors.secondary,
+                          size: 20,
+                          onTap: () => _loadData(),
+                        ),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: AppColors.cardView,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12),
+              ],
+            ),
+          ),
+        ],
+      ),
+      body:
+          _isLoading
+              ? Center(
+                child: CircularProgressIndicator(color: AppColors.secondary),
+              )
+              : _errorMessage.isNotEmpty
+              ? Center(
+                child: Text(_errorMessage, style: TextStyle(color: Colors.red)),
+              )
+              : Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        _filterButton('All', _selectedFilter == 'all'),
+                        SizedBox(width: 8),
+                        _filterButton('Active', _selectedFilter == 'active'),
+                        SizedBox(width: 8),
+                        _filterButton('Expired', _selectedFilter == 'expired'),
+                        Spacer(),
+                        IconButton(
+                          icon: Icon(
+                            _sortAscending
+                                ? Icons.arrow_upward
+                                : Icons.arrow_downward,
+                            color: AppColors.secondary,
+                          ),
+                          onPressed: _toggleSort,
+                          tooltip:
+                              _sortAscending ? 'Oldest first' : 'Newest first',
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child:
+                        _filteredStories.isEmpty
+                            ? Center(child: Text('No stories found'))
+                            : Column(
+                              children: [
+                                Expanded(
+                                  child: GridView.builder(
+                                    padding: EdgeInsets.all(16),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 4,
+                                          childAspectRatio: 0.8,
+                                          crossAxisSpacing: 16,
+                                          mainAxisSpacing: 16,
+                                        ),
+                                    itemCount: _filteredStories.length,
+                                    itemBuilder: (context, index) {
+                                      final story = _filteredStories[index];
+                                      return _buildStoryCard(story);
+                                    },
+                                  ),
+                                ),
+                                if (_totalPages > 1)
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: PaginationControls(
+                                      currentPage: _currentPage,
+                                      totalPages: _totalPages,
+                                      onPageChanged: _changePage,
+                                      itemsPerPage: _itemsPerPage,
+                                      totalItems: _totalItems,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                  ),
+                ],
+              ),
     );
   }
 }

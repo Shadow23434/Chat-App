@@ -44,10 +44,11 @@ SnackBar customSnackBar(
         ],
       ),
     ),
-    // padding: EdgeInsets.only(top: 30, right: 24),
-    behavior: SnackBarBehavior.fixed,
+    behavior: SnackBarBehavior.floating,
     backgroundColor: Colors.transparent,
     elevation: 0,
     duration: Duration(seconds: 3),
+    margin: EdgeInsets.zero,
+    padding: EdgeInsets.zero,
   );
 }

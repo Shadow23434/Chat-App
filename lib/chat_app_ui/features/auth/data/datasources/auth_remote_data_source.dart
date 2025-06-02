@@ -1,103 +1,206 @@
 import 'dart:convert';
-import 'package:chat_app/chat_app_ui/models/models.dart';
+import 'package:chat_app/chat_app_ui/features/auth/domain/entities/user_entity.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:chat_app/core/config/index.dart';
+import 'package:chat_app/chat_app_ui/utils/app.dart';
 
 class AuthRemoteDataSource {
   final String baseUrl;
+  final http.Client client;
 
-  AuthRemoteDataSource() : baseUrl = dotenv.get('AUTH_URL');
+  AuthRemoteDataSource({http.Client? client})
+    : baseUrl = '${Config.apiUrl}/auth',
+      client = client ?? http.Client();
 
-  Future<UserModel> login({
+  Future<UserEntity> login({
     required String email,
     required String password,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/login'),
-      body: jsonEncode({'email': email, 'password': password}),
-      headers: {'Content-Type': 'application/json'},
-    );
+    try {
+      final url = '$baseUrl/login';
 
-    if (response.statusCode != 200) {
-      throw Exception('Login failed: ${response.body}');
+      final response = await client
+          .post(
+            Uri.parse(url),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: jsonEncode({'email': email, 'password': password}),
+          )
+          .timeout(
+            const Duration(seconds: 60),
+            onTimeout: () {
+              logger.e('Login request timed out after 60 seconds');
+              throw Exception(
+                'Connection timeout. Please check your internet connection and try again.',
+              );
+            },
+          );
+
+      final responseBody = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return _createUserEntityFromJson(
+          responseBody['info'],
+          responseBody['token'],
+        );
+      } else {
+        logger.e('Login failed: ${responseBody['message']}');
+        throw Exception(responseBody['message'] ?? 'Login failed');
+      }
+    } catch (e) {
+      logger.e('Failed to login: $e');
+      throw Exception('Failed to login: $e');
     }
-
-    return UserModel.fromJson(jsonDecode(response.body)['user']);
   }
 
-  Future<UserModel> signup({
+  Future<UserEntity> signup({
     required String username,
     required String email,
     required String password,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/signup'),
-      body: jsonEncode({
-        'username': username,
-        'email': email,
-        'password': password,
-      }),
-      headers: {'Content-Type': 'application/json'},
-    );
+    try {
+      final response = await client.post(
+        Uri.parse('$baseUrl/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': username,
+          'email': email,
+          'password': password,
+        }),
+      );
 
-    if (response.statusCode != 201) {
-      throw Exception('Signup failed: ${response.body}');
+      final responseBody = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        logger.d('Registration successful: ${responseBody['user']}');
+        return _createUserEntityFromJson(
+          responseBody['user'],
+          responseBody['token'],
+        );
+      } else {
+        logger.e('Registration failed: ${responseBody['message']}');
+        throw Exception(responseBody['message'] ?? 'Registration failed');
+      }
+    } catch (e) {
+      logger.e('Failed to register: $e');
+      throw Exception('Failed to register: $e');
     }
-
-    return UserModel.fromJson(jsonDecode(response.body)['user']);
   }
 
   Future<void> signout() async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/signout'),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Signout failed: ${response.body}');
+    try {
+      final response = await client.post(
+        Uri.parse('$baseUrl/logout'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode != 200) {
+        final responseBody = jsonDecode(response.body);
+        logger.e('Signout failed: ${responseBody['message']}');
+        throw Exception(responseBody['message'] ?? 'Signout failed');
+      }
+      logger.d('Signout successful');
+    } catch (e) {
+      logger.e('Failed to logout: $e');
+      throw Exception('Failed to logout: $e');
     }
   }
 
-  Future<UserModel> verifyEmail({required String verificationToken}) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/verify-email'),
-      body: jsonEncode({'code': verificationToken}),
-      headers: {'Content-Type': 'application/json'},
-    );
+  Future<UserEntity> verifyEmail({required String verificationToken}) async {
+    try {
+      final response = await client.post(
+        Uri.parse('$baseUrl/verify-email'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'token': verificationToken}),
+      );
 
-    if (response.statusCode != 200) {
-      throw Exception('Verify email failed: ${response.body}');
+      final responseBody = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        logger.d('Email verification successful: ${responseBody['user']}');
+        return _createUserEntityFromJson(
+          responseBody['user'],
+          responseBody['token'],
+        );
+      } else {
+        logger.e('Email verification failed: ${responseBody['message']}');
+        throw Exception(responseBody['message'] ?? 'Email verification failed');
+      }
+    } catch (e) {
+      logger.e('Failed to verify email: $e');
+      throw Exception('Failed to verify email: $e');
     }
-
-    return UserModel.fromJson(jsonDecode(response.body)['user']);
   }
 
   Future<void> forgotPassword({required String email}) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/forgot-password'),
-      body: jsonEncode({'email': email}),
-      headers: {'Content-Type': 'application/json'},
-    );
+    try {
+      final response = await client.post(
+        Uri.parse('$baseUrl/forgot-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
 
-    if (response.statusCode != 200) {
-      throw Exception('Forgot password request failed: ${response.body}');
+      if (response.statusCode != 200) {
+        final responseBody = jsonDecode(response.body);
+        logger.e('Forgot password request failed: ${responseBody['message']}');
+        throw Exception(
+          responseBody['message'] ?? 'Password reset request failed',
+        );
+      }
+      logger.d('Forgot password request successful');
+    } catch (e) {
+      logger.e('Failed to request password reset: $e');
+      throw Exception('Failed to request password reset: $e');
     }
   }
 
-  Future<UserModel> resetPassword({
+  Future<UserEntity> resetPassword({
     required String token,
     required String password,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/reset-password/$token'),
-      body: jsonEncode({'password': password}),
-      headers: {'Content-Type': 'application/json'},
-    );
+    try {
+      final response = await client.post(
+        Uri.parse('$baseUrl/reset-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'token': token, 'password': password}),
+      );
 
-    if (response.statusCode != 200) {
-      throw Exception('Reset password failed: ${response.body}');
+      final responseBody = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        logger.d('Password reset successful: ${responseBody['user']}');
+        return _createUserEntityFromJson(
+          responseBody['user'],
+          responseBody['token'],
+        );
+      } else {
+        logger.e('Password reset failed: ${responseBody['message']}');
+        throw Exception(responseBody['message'] ?? 'Password reset failed');
+      }
+    } catch (e) {
+      logger.e('Failed to reset password: $e');
+      throw Exception('Failed to reset password: $e');
     }
+  }
 
-    return UserModel.fromJson(jsonDecode(response.body)['user']);
+  UserEntity _createUserEntityFromJson(
+    Map<String, dynamic> userData,
+    String? token,
+  ) {
+    return UserEntity(
+      id: userData['_id'] ?? userData['id'] ?? '',
+      username: userData['username'] ?? '',
+      email: userData['email'] ?? '',
+      password: '',
+      phoneNumber: userData['phoneNumber'],
+      gender: userData['gender'],
+      profilePic: userData['profilePic'],
+      lastLogin:
+          userData['lastLogin'] != null
+              ? DateTime.parse(userData['lastLogin'])
+              : null,
+      token: token,
+    );
   }
 }

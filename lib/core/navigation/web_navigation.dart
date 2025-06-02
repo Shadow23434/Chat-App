@@ -1,20 +1,20 @@
-import 'package:web/web.dart' hide Text;
+import 'package:chat_app/utils/platform_specific/web_adapter.dart';
 
 /// Web navigation utilities for direct URL manipulation
 class WebNavigation {
   /// Navigate to the admin panel
   static void navigateToAdmin() {
-    window.location.href = '/admin';
+    WebAdapter.redirect('/admin');
   }
 
   /// Navigate to the client app
   static void navigateToClient() {
-    window.location.href = '/';
+    WebAdapter.redirect('/');
   }
 
   /// Get the current path from the browser URL
   static String getCurrentPath() {
-    return window.location.pathname ?? '/';
+    return WebAdapter.getCurrentPath();
   }
 
   /// Check if the current path is for the admin panel
@@ -26,6 +26,6 @@ class WebNavigation {
   /// Update the URL without reloading the page
   static void updateUrlWithoutReload(String path) {
     // Use history API to change URL without page reload
-    window.history.pushState(null, '', path);
+    WebAdapter.updateUrlWithoutReload(path);
   }
 }

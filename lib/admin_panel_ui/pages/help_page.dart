@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:chat_app/theme.dart';
+import 'package:flutter/material.dart';
 
 class FaqItem {
   final String question;

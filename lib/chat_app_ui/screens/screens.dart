@@ -1,4 +1,4 @@
-export 'chat/chat_screen.dart';
+export '../features/message/presentation/screens/message_screen.dart';
 export '../features/auth/presentation/screens/signup_screen.dart';
 export '../features/auth/presentation/screens/login_screen.dart';
 export '../features/auth/presentation/screens/splash_screen.dart';

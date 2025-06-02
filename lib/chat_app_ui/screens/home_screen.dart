@@ -5,6 +5,13 @@ import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:chat_app/chat_app_ui/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:chat_app/chat_app_ui/features/chat/domain/usecases/get_chats_usecase.dart';
+import 'package:chat_app/chat_app_ui/features/chat/data/repositories/chat_repository_impl.dart';
+import 'package:chat_app/chat_app_ui/features/chat/data/datasources/chat_remote_data_source.dart';
+import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_state.dart';
 
 class HomeScreen extends StatelessWidget {
   static Route get route =>
@@ -14,12 +21,7 @@ class HomeScreen extends StatelessWidget {
   final ValueNotifier<int> pageIndex = ValueNotifier(0);
   final ValueNotifier<String> title = ValueNotifier('Messages');
 
-  final pages = const [
-    MessagesPage(),
-    NotificationsPage(),
-    CallsPage(),
-    ContactsPage(),
-  ];
+  final pages = [ChatPage(), NotificationsPage(), CallsPage(), ContactsPage()];
 
   final pageTitles = const ['Messages', 'Notifications', 'Calls', 'Contacts'];
 
@@ -30,53 +32,66 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: Theme.of(context).iconTheme,
-        title: ValueListenableBuilder(
-          valueListenable: title,
-          builder: (BuildContext context, String value, _) {
-            return Center(
-              child: Text(
-                value,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+    return BlocProvider(
+      create:
+          (context) => ChatBloc(
+            getChatsUseCase: GetChatsUseCase(
+              repository: ChatRepositoryImpl(
+                remoteDataSource: ChatRemoteDataSourceImpl(),
               ),
-            );
-          },
-        ),
-        leadingWidth: 54,
-        leading: Align(
-          alignment: Alignment.centerRight,
-          child: IconBackGround(
-            icon: Icons.search,
-            onTap: () {
-              // print('Searching!');
-            },
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 24.0),
-            child: Avatar.small(
-              url: defaultAvatarUrl,
-              onTap: () {
-                Navigator.of(context).push(OwnProfileScreen.route);
-              },
             ),
           ),
-        ],
-      ),
-      body: ValueListenableBuilder(
-        valueListenable: pageIndex,
-        builder: (BuildContext context, int value, _) {
-          return pages[value];
-        },
-      ),
-      bottomNavigationBar: __BottomNavigationBar(
-        onItemSelected: _onNavigationItemSelected,
+      child: Scaffold(
+        appBar: AppBar(
+          iconTheme: Theme.of(context).iconTheme,
+          title: ValueListenableBuilder(
+            valueListenable: title,
+            builder: (BuildContext context, String value, _) {
+              return Center(
+                child: Text(
+                  value,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              );
+            },
+          ),
+          leadingWidth: 54,
+          leading: Align(
+            alignment: Alignment.centerRight,
+            child: IconBackGround(icon: Icons.search, onTap: () {}),
+          ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 24.0),
+              child: BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  String avatarUrl = defaultAvatarUrl;
+                  if (state is AuthSuccess) {
+                    avatarUrl = state.user.profilePic ?? defaultAvatarUrl;
+                  }
+                  return Avatar.small(
+                    url: avatarUrl,
+                    onTap: () {
+                      Navigator.of(context).push(OwnProfileScreen.route);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        body: ValueListenableBuilder(
+          valueListenable: pageIndex,
+          builder: (BuildContext context, int value, _) {
+            return pages[value];
+          },
+        ),
+        bottomNavigationBar: __BottomNavigationBar(
+          onItemSelected: _onNavigationItemSelected,
+        ),
       ),
     );
   }
@@ -133,18 +148,7 @@ class _BottomNavigationBarState extends State<__BottomNavigationBar> {
               GlowingActionButton(
                 color: AppColors.secondary,
                 icon: CupertinoIcons.add,
-                onPressed: () {
-                  // showDialog(
-                  //   context: context,
-                  //   builder:
-                  //       (BuildContext context) => const Dialog(
-                  //         child: AspectRatio(
-                  //           aspectRatio: 8 / 7,
-                  //           child: ContactsPage(),
-                  //         ),
-                  //       ),
-                  // );
-                },
+                onPressed: () {},
               ),
               _NavigationBarItem(
                 index: 2,
@@ -203,18 +207,6 @@ class _NavigationBarItem extends StatelessWidget {
               size: 24,
               color: isSelected ? AppColors.secondary : null,
             ),
-            // SizedBox(height: 8),
-            // Text(
-            //   label,
-            //   style:
-            //       isSelected
-            //           ? const TextStyle(
-            //             fontSize: 11,
-            //             fontWeight: FontWeight.bold,
-            //             color: AppColors.secondary,
-            //           )
-            //           : const TextStyle(fontSize: 11),
-            // ),
           ],
         ),
       ),

@@ -63,42 +63,13 @@ class _LogInScreenState extends State<LogInScreen> {
               Header(
                 heading: 'Log in to ChatApp',
                 subtitle:
-                    'Welcome back! Log in using your social account or email to continue us',
+                    'Welcome back! Log in using your email to continue us',
                 crossAxisAlignment: CrossAxisAlignment.center,
                 textAlign: TextAlign.center,
               ),
               // Option row
               AuthOptionRow(),
-              // Divider
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Divider(
-                      color: Colors.grey,
-                      thickness: 0.5,
-                      height: 20,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      'OR',
-                      style: TextStyle(
-                        color: AppColors.textFaded,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Divider(
-                      color: Colors.grey,
-                      thickness: 0.5,
-                      height: 20,
-                    ),
-                  ),
-                ],
-              ),
+              SizedBox(height: 12),
               // Input
               InputColumn(
                 emailController: _emailController,
@@ -121,6 +92,11 @@ class _LogInScreenState extends State<LogInScreen> {
                             child: CircularProgressIndicator(
                               color: AppColors.secondary,
                             ),
+                          );
+                        } else if (state is AuthFailure) {
+                          return ButtonBackground(
+                            onTap: () => _logIn(),
+                            string: 'Log in',
                           );
                         }
                         return ButtonBackground(
@@ -172,16 +148,8 @@ class AuthOptionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 32),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          IconImage(
-            src: 'assets/images/facebook.png',
-            scale: 1.3,
-            onTap: () {},
-          ),
-          IconImage(src: 'assets/images/google.png', scale: 1.3, onTap: () {}),
-          IconImage(src: 'assets/images/apple.png', scale: 1.3, onTap: () {}),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          
         ],
       ),
     );

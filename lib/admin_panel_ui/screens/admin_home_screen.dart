@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:chat_app/theme.dart';
 
 class AdminHomeScreen extends StatefulWidget {
-  static Route get route =>
-      MaterialPageRoute(builder: (context) => AdminHomeScreen());
   const AdminHomeScreen({super.key});
 
   @override
@@ -32,12 +30,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   ];
 
   final List<String> pageRoutes = const [
-    '/admin/user',
-    '/admin/chat',
+    '/admin/users',
+    '/admin/chats',
     '/admin/stories',
     '/admin/calls',
     '/admin/help',
   ];
+
+  bool isLoading = true;
 
   @override
   void initState() {

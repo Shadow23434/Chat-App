@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'package:chat_app/admin_panel_ui/admin.dart';
 import 'package:chat_app/chat_app_ui/app.dart';
 import 'package:chat_app/chat_app_ui/features/auth/domain/repositories/auth_repository.dart';
 import 'package:chat_app/core/navigation/web_navigation.dart';
 import 'package:chat_app/theme.dart';
+import 'package:chat_app/admin_panel_ui/admin.dart';
 import 'package:flutter/material.dart';
 
 /// Widget that switches between admin and client apps based on URL
@@ -47,7 +47,6 @@ class _AppSwitcherState extends State<AppSwitcher> {
 
     if (_lastPath != currentPath) {
       _lastPath = currentPath;
-      print('URL CHANGED TO: $currentPath');
 
       setState(() {
         isAdminRoute = WebNavigation.isAdminRoute();

@@ -1,12 +1,10 @@
-import 'dart:convert';
-import 'package:chat_app/admin_panel_ui/models/models.dart';
+import 'package:chat_app/core/models/index.dart';
+import 'package:chat_app/admin_panel_ui/widgets/widgets.dart';
+import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:chat_app/theme.dart';
 import 'package:intl/intl.dart';
-import 'package:chat_app/admin_panel_ui/widget/widgets.dart';
-import 'package:chat_app/admin_panel_ui/services/image_service.dart';
+import 'package:chat_app/admin_panel_ui/services/index.dart';
 
 // Define a custom User class specifically for this page to handle the JSON correctly
 class UserData {
@@ -42,19 +40,19 @@ class CallsPage extends StatefulWidget {
 class _CallsPageState extends State<CallsPage> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  final CallService _callService = CallService();
   bool _isFocused = false;
   bool _sortAscending = false;
-  List<Call> _calls = [];
-  List<Call> _filteredCalls = [];
-  List<UserData> _users = [];
-  Map<String, UserData> _userMap = {};
+  List<CallModel> _calls = [];
+  List<CallModel> _filteredCalls = [];
   bool _isLoading = true;
   String _selectedFilter = 'All';
 
   // Pagination variables
   int _currentPage = 1;
   final int _itemsPerPage = 20;
-  List<Call> _paginatedCalls = [];
+  int _totalPages = 1;
+  int _totalItems = 0;
 
   @override
   void initState() {
@@ -65,183 +63,98 @@ class _CallsPageState extends State<CallsPage> {
         _isFocused = _focusNode.hasFocus;
       });
     });
-    _searchController.addListener(() {
-      _filterCalls();
-    });
   }
 
   Future<void> _loadData() async {
     try {
-      // Load users first
-      final String usersResponse = await rootBundle.loadString(
-        'assets/demo_data/users.json',
-      );
-      final List<dynamic> usersData = json.decode(usersResponse);
-
-      _users = usersData.map((json) => UserData.fromJson(json)).toList();
-      // Create a map for easy lookup
-      _userMap = {for (var user in _users) user.id: user};
-
-      // Then load calls
-      final String callsResponse = await rootBundle.loadString(
-        'assets/demo_data/calls.json',
-      );
-      final List<dynamic> data = json.decode(callsResponse);
       setState(() {
-        _calls = data.map((json) => Call.fromJson(json)).toList();
-        _filteredCalls = List.from(_calls);
+        _isLoading = true;
+      });
+
+      final result = await _callService.getCalls(
+        page: _currentPage,
+        limit: _itemsPerPage,
+        search: _searchController.text,
+        status: _selectedFilter != 'All' ? _selectedFilter : null,
+        sort: _sortAscending ? 'asc' : 'desc',
+      );
+
+      setState(() {
+        _calls = result['calls'];
+        _filteredCalls = _calls;
+        _totalItems = result['pagination']['total'];
+        _totalPages = result['pagination']['pages'];
         _isLoading = false;
       });
-      _sortCalls();
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
-      print('Error loading data: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        customSnackBar(
+          'Error',
+          'Error loading calls: $e',
+          Icons.info_outline_rounded,
+          AppColors.accent,
+        ),
+      );
     }
-  }
-
-  String _getUserEmail(String userId) {
-    final user = _userMap[userId];
-    return user?.email ?? 'Unknown User';
-  }
-
-  String? _getUserProfilePic(String userId) {
-    final user = _userMap[userId];
-    return user?.profilePic;
-  }
-
-  void _filterCalls() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      if (query.isEmpty) {
-        _filteredCalls =
-            _calls.where((call) {
-              if (_selectedFilter == 'All') return true;
-              if (_selectedFilter == 'Received')
-                return call.status == 'received';
-              if (_selectedFilter == 'Missed') return call.status == 'missed';
-              return true;
-            }).toList();
-      } else {
-        _filteredCalls =
-            _calls.where((call) {
-              // Search by caller or receiver email
-              String callerEmail = _getUserEmail(call.callerId);
-              String receiverEmail = _getUserEmail(call.receiverId);
-
-              bool matchesQuery =
-                  callerEmail.toLowerCase().contains(query) ||
-                  receiverEmail.toLowerCase().contains(query) ||
-                  call.status.toLowerCase().contains(query);
-
-              bool matchesFilter = true;
-              if (_selectedFilter == 'Received')
-                matchesFilter = call.status == 'received';
-              if (_selectedFilter == 'Missed')
-                matchesFilter = call.status == 'missed';
-
-              return matchesQuery && matchesFilter;
-            }).toList();
-      }
-      _sortCalls();
-      _updatePaginatedCalls();
-    });
-  }
-
-  void _sortCalls() {
-    setState(() {
-      _filteredCalls.sort((a, b) {
-        return _sortAscending
-            ? a.startedAt.compareTo(b.startedAt)
-            : b.startedAt.compareTo(a.startedAt);
-      });
-      _updatePaginatedCalls();
-    });
-  }
-
-  void _updatePaginatedCalls() {
-    final int startIndex = (_currentPage - 1) * _itemsPerPage;
-    final int endIndex =
-        startIndex + _itemsPerPage > _filteredCalls.length
-            ? _filteredCalls.length
-            : startIndex + _itemsPerPage;
-
-    if (startIndex >= _filteredCalls.length && _currentPage > 1) {
-      // If current page has no items (e.g., after filtering), go to previous page
-      _currentPage = 1;
-      _updatePaginatedCalls();
-      return;
-    }
-
-    _paginatedCalls = _filteredCalls.sublist(startIndex, endIndex);
   }
 
   void _changePage(int page) {
     setState(() {
       _currentPage = page;
-      _updatePaginatedCalls();
+      _loadData();
     });
-  }
-
-  int get _totalPages {
-    return (_filteredCalls.length / _itemsPerPage).ceil();
   }
 
   void _changeFilter(String filter) {
     setState(() {
       _selectedFilter = filter;
-      _filterCalls();
+      _currentPage = 1;
+      _loadData();
     });
   }
 
   void _toggleSort() {
     setState(() {
       _sortAscending = !_sortAscending;
-      _sortCalls();
+      _loadData();
     });
   }
 
-  void _deleteCall(String id) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Delete Call Record'),
-            content: Text('Are you sure you want to delete this call record?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _calls.removeWhere((call) => call.id == id);
-                    _filteredCalls.removeWhere((call) => call.id == id);
-                  });
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Call record deleted successfully')),
-                  );
-                },
-                child: Text('Delete', style: TextStyle(color: Colors.red)),
-              ),
-            ],
-          ),
-    );
+  Future<void> _deleteCall(String id) async {
+    try {
+      print('Attempting to delete call with ID: $id');
+      await _callService.deleteCall(id);
+      await _loadData();
+      ScaffoldMessenger.of(context).showSnackBar(
+        customSnackBar(
+          'Success',
+          'Call deleted successfully',
+          Icons.check_circle_outline_outlined,
+          Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        customSnackBar(
+          'Error',
+          'Error deleting call: $e',
+          Icons.info_outline_rounded,
+          AppColors.accent,
+        ),
+      );
+    }
   }
 
-  void _viewCallDetails(Call call) {
-    final callerEmail = _getUserEmail(call.callerId);
-    final receiverEmail = _getUserEmail(call.receiverId);
-
+  void _viewCallDetails(CallModel call) {
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
             title: Text('Call Details'),
-            content: Container(
+            content: SizedBox(
               width: 500,
               child: SingleChildScrollView(
                 child: Column(
@@ -253,10 +166,18 @@ class _CallsPageState extends State<CallsPage> {
                       children: [
                         CircleAvatar(
                           radius: 30,
-                          backgroundColor: call.statusColor.withOpacity(0.2),
+                          backgroundColor:
+                              call.status == 'received'
+                                  ? Colors.green.withOpacity(0.2)
+                                  : Colors.red.withOpacity(0.2),
                           child: Icon(
-                            call.statusIcon,
-                            color: call.statusColor,
+                            call.status == 'received'
+                                ? Icons.call_received
+                                : Icons.call_missed,
+                            color:
+                                call.status == 'received'
+                                    ? Colors.green
+                                    : Colors.red,
                             size: 30,
                           ),
                         ),
@@ -268,13 +189,16 @@ class _CallsPageState extends State<CallsPage> {
                               call.status.toUpperCase(),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: call.statusColor,
+                                color:
+                                    call.status == 'received'
+                                        ? Colors.green
+                                        : Colors.red,
                                 fontSize: 16,
                               ),
                             ),
                             SizedBox(height: 4),
                             Text(
-                              call.formattedDate,
+                              call.startedAt.toLocal().toString(),
                               style: TextStyle(color: AppColors.textFaded),
                             ),
                           ],
@@ -283,8 +207,8 @@ class _CallsPageState extends State<CallsPage> {
                     ),
                     SizedBox(height: 24),
                     _detailItem('ID', call.id),
-                    _detailItem('Caller Email', callerEmail),
-                    _detailItem('Receiver Email', receiverEmail),
+                    _detailItem('Caller', call.caller.email),
+                    _detailItem('Receiver', call.receiver.email),
                     _detailItem(
                       'Duration',
                       call.duration > 0
@@ -300,14 +224,6 @@ class _CallsPageState extends State<CallsPage> {
                         'Ended At',
                         DateFormat('yyyy-MM-dd HH:mm:ss').format(call.endedAt!),
                       ),
-                    _detailItem(
-                      'Created',
-                      DateFormat('yyyy-MM-dd HH:mm:ss').format(call.createdAt),
-                    ),
-                    _detailItem(
-                      'Updated',
-                      DateFormat('yyyy-MM-dd HH:mm:ss').format(call.updatedAt),
-                    ),
                   ],
                 ),
               ),
@@ -377,7 +293,6 @@ class _CallsPageState extends State<CallsPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Search bar
                 SizedBox(
                   width: 400,
                   child: TextFormField(
@@ -393,7 +308,7 @@ class _CallsPageState extends State<CallsPage> {
                           icon: Icons.search_rounded,
                           color: AppColors.secondary,
                           size: 20,
-                          onTap: () => _filterCalls(),
+                          onTap: () => _loadData(),
                         ),
                       ),
                       border: OutlineInputBorder(
@@ -403,6 +318,7 @@ class _CallsPageState extends State<CallsPage> {
                       filled: true,
                       fillColor: AppColors.cardView,
                     ),
+                    onFieldSubmitted: (_) => _loadData(),
                   ),
                 ),
                 SizedBox(width: 12),
@@ -454,15 +370,14 @@ class _CallsPageState extends State<CallsPage> {
                                 Expanded(
                                   child: ListView.builder(
                                     padding: EdgeInsets.all(16),
-                                    itemCount: _paginatedCalls.length,
+                                    itemCount: _filteredCalls.length,
                                     itemBuilder: (context, index) {
-                                      final call = _paginatedCalls[index];
+                                      final call = _filteredCalls[index];
                                       return _buildCallItem(call);
                                     },
                                   ),
                                 ),
-                                // Pagination controls
-                                if (_filteredCalls.length > _itemsPerPage)
+                                if (_totalItems > _itemsPerPage)
                                   Padding(
                                     padding: const EdgeInsets.all(16.0),
                                     child: PaginationControls(
@@ -470,7 +385,7 @@ class _CallsPageState extends State<CallsPage> {
                                       totalPages: _totalPages,
                                       onPageChanged: _changePage,
                                       itemsPerPage: _itemsPerPage,
-                                      totalItems: _filteredCalls.length,
+                                      totalItems: _totalItems,
                                     ),
                                   ),
                               ],
@@ -498,12 +413,7 @@ class _CallsPageState extends State<CallsPage> {
     );
   }
 
-  Widget _buildCallItem(Call call) {
-    final callerEmail = _getUserEmail(call.callerId);
-    final receiverEmail = _getUserEmail(call.receiverId);
-    final callerProfilePic = _getUserProfilePic(call.callerId);
-    final receiverProfilePic = _getUserProfilePic(call.receiverId);
-
+  Widget _buildCallItem(CallModel call) {
     return Card(
       color: AppColors.cardView,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -517,8 +427,16 @@ class _CallsPageState extends State<CallsPage> {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundColor: call.statusColor.withOpacity(0.2),
-                child: Icon(call.statusIcon, color: call.statusColor),
+                backgroundColor:
+                    call.status == 'received'
+                        ? Colors.green.withOpacity(0.2)
+                        : Colors.red.withOpacity(0.2),
+                child: Icon(
+                  call.status == 'received'
+                      ? Icons.call_received
+                      : Icons.call_missed,
+                  color: call.status == 'received' ? Colors.green : Colors.red,
+                ),
               ),
               SizedBox(width: 16),
               Expanded(
@@ -535,13 +453,13 @@ class _CallsPageState extends State<CallsPage> {
                           ),
                         ),
                         ImageService.avatarImage(
-                          url: callerProfilePic,
+                          url: call.caller.profilePic,
                           radius: 10,
                         ),
                         SizedBox(width: 4),
                         Flexible(
                           child: Text(
-                            callerEmail,
+                            call.caller.email,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -562,13 +480,13 @@ class _CallsPageState extends State<CallsPage> {
                           ),
                         ),
                         ImageService.avatarImage(
-                          url: receiverProfilePic,
+                          url: call.receiver.profilePic,
                           radius: 10,
                         ),
                         SizedBox(width: 4),
                         Flexible(
                           child: Text(
-                            receiverEmail,
+                            call.receiver.email,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -585,11 +503,9 @@ class _CallsPageState extends State<CallsPage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    call.formattedDate,
+                    call.startedAt.toLocal().toString(),
                     style: TextStyle(color: AppColors.textFaded, fontSize: 12),
                   ),
-                  SizedBox(height: 4),
-                  Text(call.formattedTime, style: TextStyle(fontSize: 14)),
                   SizedBox(height: 4),
                   Text(
                     call.duration > 0 ? call.formattedDuration : 'No duration',

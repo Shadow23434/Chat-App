@@ -19,7 +19,6 @@ dependencies:
   jiffy: ^6.3.2
   meta: ^1.16.0
   logger: ^2.5.0
-  app_links: ^6.4.0
   fl_chart: ^1.0.0
   qr_flutter: ^4.1.0
   flutter_multi_formatter: ^2.13.0
@@ -30,12 +29,19 @@ dependencies:
   intl: ^0.20.2
   flutter_bloc: ^9.1.0
   flutter_secure_storage: ^9.2.4
-  flutter_dotenv: ^5.2.1
-  socket_io_client: ^3.1.1
-  uni_links: ^0.5.1
-  web: ^1.1.1
+  socket_io_client: ^2.0.3+1  # Downgraded to avoid web dependency
   path: ^1.9.1
   path_provider: ^2.1.5
+  shared_preferences: ^2.5.3
+  provider: ^6.1.5
+  flutter_dotenv: ^5.2.1
+  dio: ^5.8.0+1
+  image_picker: ^1.1.2
+  web: ^1.1.1
+  path_provider_windows: ^2.3.0
+  file_saver: ^0.2.14
+  equatable: ^2.0.7
+  app_links: ^3.4.1
 
 dev_dependencies:
   flutter_lints: ^5.0.0
@@ -57,7 +63,6 @@ flutter:
   
   assets:
     - assets/images/
-    - assets/demo_data/
     - .env
 
   fonts:

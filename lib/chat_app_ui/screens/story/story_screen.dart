@@ -60,8 +60,9 @@ class _StoryScreenState extends State<StoryScreen> {
     }
   }
 
+  List<UserModel> users = Helpers.users;
   void _initializeComments() {
-    _storyComments = Comment.generateDemoComments(widget.stories, users);
+    _storyComments = [] as Map<String, List<Comment>>;
   }
 
   Future<void> _initializeLikes() async {

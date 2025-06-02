@@ -1,10 +1,16 @@
+import 'package:audioplayers/audioplayers.dart';
+import 'package:chat_app/admin_panel_ui/widgets/widgets.dart';
+import 'package:chat_app/chat_app_ui/widgets/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:chat_app/admin_panel_ui/models/chats.dart' as chat_models;
-import 'package:chat_app/admin_panel_ui/services/demo_data.dart';
 import 'package:chat_app/theme.dart';
+import 'package:chat_app/core/models/chat_model.dart';
+import 'package:chat_app/core/models/message_model.dart';
+import 'package:chat_app/core/models/user_model.dart';
+import 'package:provider/provider.dart';
+import 'package:chat_app/admin_panel_ui/services/index.dart';
 
 class ChatDetails extends StatefulWidget {
-  final chat_models.Chat chat;
+  final ChatModel chat;
 
   const ChatDetails({super.key, required this.chat});
 
@@ -13,13 +19,16 @@ class ChatDetails extends StatefulWidget {
 }
 
 class _ChatDetailsState extends State<ChatDetails> {
-  final DemoData _demoData = DemoData();
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  List<chat_models.Message> messages = [];
+  List<MessageModel> messages = [];
   bool isLoading = true;
   bool isSending = false;
+  String? currentlyPlayingMessageId;
+
+  // Audio players management
+  final Map<String, AudioPlayer> _audioPlayers = {};
 
   @override
   void initState() {
@@ -31,6 +40,11 @@ class _ChatDetailsState extends State<ChatDetails> {
   void dispose() {
     _messageController.dispose();
     _scrollController.dispose();
+    // Dispose all audio players
+    _audioPlayers.forEach((key, player) {
+      player.dispose();
+    });
+    _audioPlayers.clear();
     super.dispose();
   }
 
@@ -40,9 +54,16 @@ class _ChatDetailsState extends State<ChatDetails> {
     });
 
     try {
-      final chatMessages = await _demoData.getMessages(widget.chat.id);
+      final chatService = Provider.of<ChatService>(context, listen: false);
+      final response = await chatService.getChatDetails(widget.chat.id);
+
       setState(() {
-        messages = chatMessages;
+        if (response['messages'] is List) {
+          messages =
+              (response['messages'] as List).cast<MessageModel>().toList();
+        } else {
+          messages = [];
+        }
         isLoading = false;
       });
 
@@ -66,25 +87,65 @@ class _ChatDetailsState extends State<ChatDetails> {
 
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppColors.accent),
+      customSnackBar(
+        'Error',
+        message,
+        Icons.info_outline_rounded,
+        AppColors.accent,
+      ),
     );
+  }
+
+  void _handleAudioPlayingChanged(String? messageId) {
+    setState(() {
+      // Stop all other audio players
+      if (currentlyPlayingMessageId != null &&
+          currentlyPlayingMessageId != messageId) {
+        _audioPlayers[currentlyPlayingMessageId]?.pause();
+      }
+      currentlyPlayingMessageId = messageId;
+    });
   }
 
   Future<void> _deleteMessage(String messageId) async {
     try {
-      await _demoData.deleteMessage(widget.chat.id, messageId);
+      setState(() {
+        isSending = true;
+      });
+
+      final chatService = Provider.of<ChatService>(context, listen: false);
+      await chatService.deleteMessage(messageId);
+
+      // Reload messages after deletion
       await _loadMessages();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Message deleted')));
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          customSnackBar(
+            'Success',
+            'Message deleted successfully',
+            Icons.check_circle_outline,
+            Colors.green,
+          ),
+        );
+      }
     } catch (e) {
-      _showErrorSnackBar('Failed to delete message: $e');
+      if (mounted) {
+        _showErrorSnackBar('Failed to delete message: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isSending = false;
+        });
+      }
     }
   }
 
   Future<void> _deleteChat() async {
     try {
-      await _demoData.deleteChat(widget.chat.id);
+      final chatService = Provider.of<ChatService>(context, listen: false);
+      await chatService.deleteChat(widget.chat.id);
       Navigator.pop(context, 'deleted');
     } catch (e) {
       _showErrorSnackBar('Failed to delete chat: $e');
@@ -106,10 +167,10 @@ class _ChatDetailsState extends State<ChatDetails> {
                   final participant = widget.chat.participants[index];
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundImage: NetworkImage(participant.avatarUrl),
+                      backgroundImage: NetworkImage(participant.profilePic),
                     ),
-                    title: Text(participant.name),
-                    subtitle: Text(participant.lastLogin),
+                    title: Text(participant.username),
+                    subtitle: Text(participant.lastLogin?.toString() ?? ''),
                     onTap: () {
                       Navigator.pop(context);
                       _showUserDetails(participant);
@@ -128,7 +189,7 @@ class _ChatDetailsState extends State<ChatDetails> {
     );
   }
 
-  void _showUserDetails(chat_models.User user) {
+  void _showUserDetails(UserModel user) {
     showDialog(
       context: context,
       builder:
@@ -141,13 +202,13 @@ class _ChatDetailsState extends State<ChatDetails> {
                 Center(
                   child: CircleAvatar(
                     radius: 40,
-                    backgroundImage: NetworkImage(user.avatarUrl),
+                    backgroundImage: NetworkImage(user.profilePic),
                   ),
                 ),
                 SizedBox(height: 16),
-                Text('Name: ${user.name}'),
+                Text('Name: ${user.username}'),
                 Text('Email: ${user.email}'),
-                if (user.lastLogin.isNotEmpty)
+                if (user.lastLogin != null)
                   Text('Last Login: ${user.lastLogin}'),
               ],
             ),
@@ -190,7 +251,7 @@ class _ChatDetailsState extends State<ChatDetails> {
     return Row(
       children: [
         Text(
-          '${widget.chat.messages.length}',
+          '${messages.length}',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         SizedBox(width: 4),
@@ -253,16 +314,15 @@ class _ChatDetailsState extends State<ChatDetails> {
         );
   }
 
-  bool _shouldShowDateSeparator(
-    chat_models.Message previous,
-    chat_models.Message current,
-  ) {
+  bool _shouldShowDateSeparator(MessageModel previous, MessageModel current) {
     // This is a simplified implementation
     // In a real app, you would parse the timestamp and compare dates
-    return previous.id.substring(0, 5) != current.id.substring(0, 5);
+    return previous.createdAt.day != current.createdAt.day ||
+        previous.createdAt.month != current.createdAt.month ||
+        previous.createdAt.year != current.createdAt.year;
   }
 
-  Widget _buildDateSeparator(chat_models.Message message) {
+  Widget _buildDateSeparator(MessageModel message) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Row(
@@ -277,7 +337,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
-                message.timestamp,
+                '${message.createdAt.day}/${message.createdAt.month}/${message.createdAt.year}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: AppColors.secondary,
@@ -292,8 +352,17 @@ class _ChatDetailsState extends State<ChatDetails> {
     );
   }
 
-  Widget _buildMessageItem(chat_models.Message message) {
-    final bool isCurrentUser = message.senderId == 'user_1';
+  Widget _buildAudioMessage(MessageModel message) {
+    return AudioMessageWidget(
+      audioUrl: message.mediaUrl!,
+      messageId: message.id,
+      currentlyPlayingMessageId: currentlyPlayingMessageId,
+      onPlayingChanged: _handleAudioPlayingChanged,
+    );
+  }
+
+  Widget _buildMessageItem(MessageModel message) {
+    final bool isCurrentUser = false;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -303,11 +372,10 @@ class _ChatDetailsState extends State<ChatDetails> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isCurrentUser) ...[
-            CircleAvatar(
-              backgroundImage: NetworkImage(
-                message.senderAvatar ?? widget.chat.avatarUrl,
-              ),
+            ImageService.avatarImage(
+              url: message.sender.profilePic,
               radius: 16,
+              backgroundColor: Colors.grey.shade200,
             ),
             const SizedBox(width: 8),
           ],
@@ -329,7 +397,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                 children: [
                   if (!isCurrentUser) ...[
                     Text(
-                      message.senderName ?? 'Unknown',
+                      message.sender.username,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
@@ -338,59 +406,40 @@ class _ChatDetailsState extends State<ChatDetails> {
                     ),
                     const SizedBox(height: 4),
                   ],
+
+                  // Image Message
                   if (message.type == 'image' &&
                       message.mediaUrl != null &&
                       message.mediaUrl!.isNotEmpty) ...[
-                    ClipRRect(
+                    ImageService.optimizedNetworkImage(
+                      url: message.mediaUrl,
+                      height: 150,
+                      width: 200,
+                      fit: BoxFit.cover,
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        message.mediaUrl!,
-                        height: 150,
-                        width: 200,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            height: 150,
-                            width: 200,
-                            color: Colors.grey.shade300,
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                value:
-                                    loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
-                                        : null,
-                                color: AppColors.secondary,
-                              ),
-                            ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 150,
-                            width: 200,
-                            color: Colors.grey.shade300,
-                            child: const Center(
-                              child: Icon(
-                                Icons.broken_image,
-                                color: Colors.white,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                      placeholderColor: Colors.grey.shade300,
                     ),
                     if (message.content.isNotEmpty) const SizedBox(height: 8),
                   ],
+
+                  // Audio Message
+                  if (message.type == 'audio' &&
+                      message.mediaUrl != null &&
+                      message.mediaUrl!.isNotEmpty) ...[
+                    _buildAudioMessage(message),
+                    if (message.content.isNotEmpty) const SizedBox(height: 8),
+                  ],
+
+                  // Text Content
                   if (message.content.isNotEmpty) Text(message.content),
                   const SizedBox(height: 4),
+
+                  // Timestamp and Read Status
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        message.timestamp,
+                        '${message.createdAt.hour.toString().padLeft(2, '0')}:${message.createdAt.minute.toString().padLeft(2, '0')}',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade600,
@@ -447,14 +496,14 @@ class _ChatDetailsState extends State<ChatDetails> {
     );
   }
 
-  void _showDeleteMessageConfirmation(chat_models.Message message) {
+  void _showDeleteMessageConfirmation(MessageModel message) {
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
             title: const Text('Delete Message'),
             content: const Text(
-              'Are you sure you want to delete this message?',
+              'Are you sure you want to delete this message? This action cannot be undone.',
             ),
             actions: [
               TextButton(
@@ -466,10 +515,8 @@ class _ChatDetailsState extends State<ChatDetails> {
                   Navigator.pop(context);
                   _deleteMessage(message.id);
                 },
-                child: const Text(
-                  'Delete',
-                  style: TextStyle(color: AppColors.accent),
-                ),
+                style: TextButton.styleFrom(foregroundColor: AppColors.accent),
+                child: const Text('Delete'),
               ),
             ],
           ),

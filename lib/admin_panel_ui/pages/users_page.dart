@@ -1,46 +1,17 @@
-import 'dart:convert';
-import 'package:chat_app/admin_panel_ui/screens/screens.dart';
-import 'package:chat_app/admin_panel_ui/widget/widgets.dart';
 import 'package:chat_app/theme.dart';
-import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:chat_app/admin_panel_ui/services/image_service.dart';
+import 'package:provider/provider.dart';
+import 'package:chat_app/core/models/index.dart';
+import 'package:chat_app/admin_panel_ui/screens/screens.dart';
+import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
+import 'package:chat_app/admin_panel_ui/widgets/widgets.dart';
+import 'package:chat_app/admin_panel_ui/services/index.dart';
+import 'package:dio/dio.dart';
 
 enum SortOption { ascending, descending }
 
 enum AccountOption { signOut, info }
-
-// Custom User model for this page to handle JSON data properly
-class UserData {
-  final String id;
-  final String username;
-  final String email;
-  final String? gender;
-  final String? phoneNumber;
-  final String profilePic;
-
-  UserData({
-    required this.id,
-    required this.username,
-    required this.email,
-    this.gender,
-    this.phoneNumber,
-    required this.profilePic,
-  });
-
-  factory UserData.fromJson(Map<String, dynamic> json) {
-    return UserData(
-      id: json['_id']['\$oid'],
-      username: json['username'] ?? 'Unknown',
-      email: json['email'] ?? '',
-      gender: json['gender'] ?? 'Unknown',
-      phoneNumber: json['phoneNumber'],
-      profilePic: json['profilePic'] ?? '',
-    );
-  }
-}
 
 class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
@@ -54,138 +25,268 @@ class _UsersPageState extends State<UsersPage> {
   final FocusNode _focusNode = FocusNode();
   bool _isFocused = false;
   bool _isClicked = false;
-  List<UserData> _users = [];
-  List<UserData> _filteredUsers = [];
+  List<UserModel> _users = [];
+  List<UserModel> _filteredUsers = [];
   bool _isLoading = true;
   bool _sortAscending = true;
 
   // Pagination variables
   int _currentPage = 1;
   final int _itemsPerPage = 20;
-  List<UserData> _paginatedUsers = [];
+  List<UserModel> _paginatedUsers = [];
+  int _totalUsers = 0;
+  int _backendTotalPages = 0;
 
   // Stats counters
   int _maleCount = 0;
   int _femaleCount = 0;
   int _unknownGenderCount = 0;
+  int _adminCount = 0;
+  int _userCount = 0;
+  int _totalNonAdminUsers = 0;
+  int _filteredNonAdminUsers = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    // Only load data if authenticated
+    final authService = Provider.of<AuthService>(context, listen: false);
+    if (authService.isAuthenticated) {
+      _loadData();
+    } else {
+      // Potentially navigate to login or show a message
+      setState(() {
+        _isLoading = false;
+      });
+    }
     _focusNode.addListener(() {
       setState(() {
         _isFocused = _focusNode.hasFocus;
       });
     });
-    _searchController.addListener(() {
-      _filterUsers();
-    });
   }
 
   Future<void> _loadData() async {
     try {
-      // Load users from JSON file
-      final String usersResponse = await rootBundle.loadString(
-        'assets/demo_data/users.json',
+      setState(() {
+        _isLoading = true;
+        _users = [];
+        _filteredUsers = [];
+        _paginatedUsers = [];
+        _totalUsers = 0;
+        _backendTotalPages = 0;
+        _maleCount = 0;
+        _femaleCount = 0;
+        _unknownGenderCount = 0;
+        _adminCount = 0;
+        _userCount = 0;
+        _totalNonAdminUsers = 0;
+        _filteredNonAdminUsers = 0;
+      });
+
+      final userService = Provider.of<UserService>(context, listen: false);
+
+      // Gọi API với các tham số
+      final response = await userService.getUsers(
+        page: _currentPage,
+        limit: _itemsPerPage,
+        search: _searchController.text,
+        sort: _sortAscending ? 'asc' : 'desc',
+        sortField: 'username',
       );
-      final List<dynamic> usersData = json.decode(usersResponse);
 
-      // Parse JSON data to UserData objects
-      final loadedUsers =
-          usersData.map((json) => UserData.fromJson(json)).toList();
+      if (!mounted) return;
 
-      // Calculate gender stats
-      int maleCount = 0;
-      int femaleCount = 0;
-      int unknownCount = 0;
+      // Check if the response has the expected structure
+      if (response['users'] is List &&
+          response['stats'] is Map &&
+          response['pagination'] is Map) {
+        setState(() {
+          _users =
+              (response['users'] as List)
+                  .map((user) => UserModel.fromJson(user))
+                  .toList();
+          final stats = response['stats'];
+          _maleCount = stats['maleCount'];
+          _femaleCount = stats['femaleCount'];
+          _unknownGenderCount = stats['unknownGenderCount'];
+          _adminCount = stats['adminCount'];
+          _totalUsers = stats['totalUsers'];
 
-      for (var user in loadedUsers) {
-        if (user.gender?.toLowerCase() == 'male') {
-          maleCount++;
-        } else if (user.gender?.toLowerCase() == 'female') {
-          femaleCount++;
-        } else {
-          unknownCount++;
+          // Update user count from backend
+          _userCount = stats['userCount'] ?? 0;
+
+          // Update new stats fields from backend
+          _totalNonAdminUsers = stats['totalUserCount'] ?? 0;
+          _filteredNonAdminUsers = stats['filteredUserCount'] ?? 0;
+
+          // Cập nhật thông tin phân trang
+          final pagination = response['pagination'];
+          _backendTotalPages = pagination['pages'];
+
+          _isLoading = false;
+          _updatePaginatedUsers();
+        });
+      } else {
+        // Handle cases where the response is not in the expected JSON format
+        // This might happen if the server returns an HTML error page
+        print('Received unexpected response format: ${response.runtimeType}');
+        print('Response data: $response');
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            _users = [];
+            _filteredUsers = [];
+            _paginatedUsers = [];
+            _totalUsers = 0;
+            _backendTotalPages = 0;
+            _maleCount = 0;
+            _femaleCount = 0;
+            _unknownGenderCount = 0;
+            _adminCount = 0;
+            _userCount = 0;
+            _totalNonAdminUsers = 0;
+            _filteredNonAdminUsers = 0;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            customSnackBar(
+              'Error',
+              'Received unexpected data format from the server.',
+              Icons.info_outline_rounded,
+              AppColors.accent,
+            ),
+          );
         }
       }
+    } on DioException catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          // Reset các giá trị về mặc định
+          _users = [];
+          _filteredUsers = [];
+          _paginatedUsers = [];
+          _totalUsers = 0;
+          _backendTotalPages = 0;
+          _maleCount = 0;
+          _femaleCount = 0;
+          _unknownGenderCount = 0;
+          _adminCount = 0;
+          _userCount = 0;
+          _totalNonAdminUsers = 0;
+          _filteredNonAdminUsers = 0;
+        });
 
-      setState(() {
-        _users = loadedUsers;
-        _filteredUsers = List.from(_users);
-        _maleCount = maleCount;
-        _femaleCount = femaleCount;
-        _unknownGenderCount = unknownCount;
-        _isLoading = false;
-        _updatePaginatedUsers();
-      });
+        // Hiển thị thông báo lỗi chi tiết hơn nếu có thông tin từ DioException
+        String errorMessage = 'Failed to load users.';
+        if (e.response != null) {
+          errorMessage = 'Error: ${e.response!.statusCode}';
+          if (e.response!.data != null) {
+            // Attempt to parse error message from response data if it's a Map
+            if (e.response!.data is Map &&
+                e.response!.data.containsKey('message')) {
+              errorMessage = 'Error: ${e.response!.data['message']}';
+            } else {
+              // If response data is not a Map (e.g., HTML), show a generic error
+              errorMessage = 'Error: Received unexpected response from server.';
+              print(
+                'DioError Response Data: ${e.response!.data}',
+              ); // Log unexpected data
+            }
+          }
+        } else {
+          errorMessage = 'Error: ${e.message ?? 'Unknown network error'}';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          customSnackBar(
+            'Error',
+            errorMessage,
+            Icons.info_outline_rounded,
+            AppColors.accent,
+          ),
+        );
+
+        // Xử lý khi session hết hạn (based on error message content)
+        if (errorMessage.contains('Session expired') ||
+            errorMessage.contains('Not authenticated')) {
+          Navigator.of(context).pushReplacement(AdminLogInScreen.route);
+        }
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      print('Error loading user data: $e');
+      // Catch any other unexpected errors
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          // Reset các giá trị về mặc định
+          _users = [];
+          _filteredUsers = [];
+          _paginatedUsers = [];
+          _totalUsers = 0;
+          _backendTotalPages = 0;
+          _maleCount = 0;
+          _femaleCount = 0;
+          _unknownGenderCount = 0;
+          _adminCount = 0;
+          _userCount = 0;
+          _totalNonAdminUsers = 0;
+          _filteredNonAdminUsers = 0;
+        });
+
+        // Hiển thị thông báo lỗi
+        ScaffoldMessenger.of(context).showSnackBar(
+          customSnackBar(
+            'Error',
+            e.toString().replaceAll('Exception: ', ''),
+            Icons.info_outline_rounded,
+            AppColors.accent,
+          ),
+        );
+
+        // Xử lý khi session hết hạn
+        if (e.toString().contains('Session expired') ||
+            e.toString().contains('Not authenticated')) {
+          Navigator.of(context).pushReplacement(AdminLogInScreen.route);
+        }
+      }
     }
   }
 
   void _filterUsers() {
-    final query = _searchController.text.toLowerCase();
     setState(() {
-      if (query.isEmpty) {
-        _filteredUsers = List.from(_users);
-      } else {
-        _filteredUsers =
-            _users.where((user) {
-              return user.username.toLowerCase().contains(query) ||
-                  user.email.toLowerCase().contains(query) ||
-                  (user.phoneNumber != null &&
-                      user.phoneNumber!.toLowerCase().contains(query));
-            }).toList();
-      }
-      _sortUsers();
-      _currentPage = 1; // Reset to first page when filtering
-      _updatePaginatedUsers();
+      _currentPage = 1; // Reset về trang đầu tiên khi tìm kiếm
     });
+    _loadData(); // Tải lại dữ liệu với từ khóa tìm kiếm mới
   }
 
   void _sortUsers() {
     setState(() {
-      _filteredUsers.sort((a, b) {
-        return _sortAscending
-            ? a.username.compareTo(b.username)
-            : b.username.compareTo(a.username);
-      });
-      _updatePaginatedUsers();
+      _currentPage = 1; // Reset về trang đầu tiên khi sắp xếp
     });
+    _loadData(); // Tải lại dữ liệu với thứ tự sắp xếp mới
   }
 
   void _updatePaginatedUsers() {
-    final int startIndex = (_currentPage - 1) * _itemsPerPage;
-    final int endIndex =
-        startIndex + _itemsPerPage > _filteredUsers.length
-            ? _filteredUsers.length
-            : startIndex + _itemsPerPage;
-
-    if (startIndex >= _filteredUsers.length && _currentPage > 1) {
-      // If current page has no items (e.g., after filtering), go to first page
-      _currentPage = 1;
-      _updatePaginatedUsers();
-      return;
-    }
-
+    // Since _users now only contains items for the current page,
+    // _paginatedUsers should just be _users.
+    if (!mounted) return;
     setState(() {
-      _paginatedUsers = _filteredUsers.sublist(startIndex, endIndex);
+      _paginatedUsers = List.from(_users);
     });
   }
 
   void _changePage(int page) {
-    setState(() {
-      _currentPage = page;
-      _updatePaginatedUsers();
-    });
+    if (page >= 1 && page <= _backendTotalPages) {
+      setState(() {
+        _currentPage = page;
+      });
+      _loadData(); // Tải dữ liệu cho trang mới
+    }
   }
 
   int get _totalPages {
-    return (_filteredUsers.length / _itemsPerPage).ceil();
+    // Use the total pages from the backend
+    return _backendTotalPages;
   }
 
   @override
@@ -224,8 +325,9 @@ class _UsersPageState extends State<UsersPage> {
                     controller: _searchController,
                     focusNode: _focusNode,
                     textAlign: TextAlign.start,
+                    onFieldSubmitted: (_) => _filterUsers(),
                     decoration: InputDecoration(
-                      hintText: 'Search by name, email or phone',
+                      hintText: 'Search by name, email, phone, role',
                       hintStyle: TextStyle(color: AppColors.textFaded),
                       suffixIcon: Padding(
                         padding: const EdgeInsets.all(8),
@@ -265,11 +367,20 @@ class _UsersPageState extends State<UsersPage> {
                         children: [
                           Avatar.small(
                             url:
-                                'https://th.bing.com/th/id/OIP.V1Pj5o3-zDgGCehHF2UFggHaHa?w=185&h=185&c=7&r=0&o=5&pid=1.7',
+                                Provider.of<AuthService>(
+                                  context,
+                                ).currentAdmin?.profilePic ??
+                                '',
                             onTap: () {},
                           ),
                           SizedBox(width: 6),
-                          Text('Admin', style: TextStyle(fontSize: 14)),
+                          Text(
+                            Provider.of<AuthService>(
+                                  context,
+                                ).currentAdmin?.username ??
+                                'Admin',
+                            style: TextStyle(fontSize: 14),
+                          ),
                           _isClicked
                               ? Icon(Icons.keyboard_arrow_up_rounded)
                               : Icon(Icons.keyboard_arrow_down_rounded),
@@ -288,12 +399,16 @@ class _UsersPageState extends State<UsersPage> {
                   onSelected: (AccountOption option) {
                     setState(() {
                       option == AccountOption.signOut
-                          ? Navigator.of(
+                          ? Navigator.pushNamedAndRemoveUntil(
                             context,
-                          ).pushReplacement(AdminLogInScreen.route)
-                          : Navigator.of(
+                            '/',
+                            (route) => false,
+                          )
+                          : Navigator.pushNamedAndRemoveUntil(
                             context,
-                          ).pushReplacement(AccountInfo.route);
+                            '/account-info',
+                            (route) => false,
+                          );
                     });
                   },
                   itemBuilder:
@@ -330,9 +445,41 @@ class _UsersPageState extends State<UsersPage> {
               ? Center(
                 child: CircularProgressIndicator(color: AppColors.secondary),
               )
+              : _users.isEmpty
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.people_outline,
+                      size: 64,
+                      color: AppColors.textFaded,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'No users found',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: AppColors.textFaded,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AddNewUser(),
+                        );
+                      },
+                      icon: Icon(Icons.add),
+                      label: Text('Add New User'),
+                    ),
+                  ],
+                ),
+              )
               : _Body(
                 users: _paginatedUsers,
-                allUsers: _filteredUsers,
+                allUsers: _users,
                 currentPage: _currentPage,
                 totalPages: _totalPages,
                 itemsPerPage: _itemsPerPage,
@@ -340,6 +487,7 @@ class _UsersPageState extends State<UsersPage> {
                 maleCount: _maleCount,
                 femaleCount: _femaleCount,
                 unknownCount: _unknownGenderCount,
+                adminCount: _adminCount,
                 onRefresh: _loadData,
                 onSort: (SortOption option) {
                   setState(() {
@@ -347,6 +495,10 @@ class _UsersPageState extends State<UsersPage> {
                     _sortUsers();
                   });
                 },
+                totalUsers: _totalUsers,
+                userCount: _userCount,
+                totalNonAdminUsers: _totalNonAdminUsers,
+                filteredNonAdminUsers: _filteredNonAdminUsers,
               ),
     );
   }
@@ -364,10 +516,15 @@ class _Body extends StatelessWidget {
     required this.maleCount,
     required this.femaleCount,
     required this.unknownCount,
+    required this.adminCount,
     required this.onRefresh,
+    required this.totalUsers,
+    required this.userCount,
+    required this.totalNonAdminUsers,
+    required this.filteredNonAdminUsers,
   });
-  final List<UserData> users;
-  final List<UserData> allUsers;
+  final List<UserModel> users;
+  final List<UserModel> allUsers;
   final void Function(SortOption) onSort;
   final int currentPage;
   final int totalPages;
@@ -376,10 +533,18 @@ class _Body extends StatelessWidget {
   final int maleCount;
   final int femaleCount;
   final int unknownCount;
+  final int adminCount;
   final VoidCallback onRefresh;
+  final int totalUsers;
+  final int userCount;
+  final int totalNonAdminUsers;
+  final int filteredNonAdminUsers;
 
   @override
   Widget build(BuildContext context) {
+    // Calculate overall total unfiltered users
+    final overallTotalUnfilteredUsers = totalNonAdminUsers + adminCount;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: SingleChildScrollView(
@@ -412,9 +577,7 @@ class _Body extends StatelessWidget {
                                 onTap: () {
                                   showDialog(
                                     context: context,
-                                    builder: (context) {
-                                      return AddNewUser();
-                                    },
+                                    builder: (context) => AddNewUser(),
                                   );
                                 },
                                 borderRadius: BorderRadius.circular(12),
@@ -450,10 +613,14 @@ class _Body extends StatelessWidget {
                     ),
                   ),
                   _CardList(
-                    users: allUsers.length,
+                    totalUsers: totalUsers,
                     maleCount: maleCount,
                     femaleCount: femaleCount,
                     unknownCount: unknownCount,
+                    adminCount: adminCount,
+                    userCount: userCount,
+                    totalNonAdminUsers: totalNonAdminUsers,
+                    filteredNonAdminUsers: filteredNonAdminUsers,
                   ),
                   SizedBox(height: 12),
                   // User's tabel
@@ -468,7 +635,7 @@ class _Body extends StatelessWidget {
                         vertical: 12,
                       ),
                       child:
-                          (allUsers.isEmpty)
+                          (users.isEmpty)
                               ? Text('There is no user here. Try to add one.')
                               : Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -552,11 +719,11 @@ class _Body extends StatelessWidget {
                                       ),
                                       DataColumn(
                                         label: Text('Gender'),
-                                        columnWidth: FlexColumnWidth(0.1),
+                                        columnWidth: FlexColumnWidth(0.15),
                                       ),
                                       DataColumn(
-                                        label: Text('Phone Number'),
-                                        columnWidth: FlexColumnWidth(0.2),
+                                        label: Text('Role'),
+                                        columnWidth: FlexColumnWidth(0.15),
                                       ),
                                       DataColumn(
                                         label: Text(''),
@@ -566,7 +733,7 @@ class _Body extends StatelessWidget {
                                     rows:
                                         users.asMap().entries.map((entry) {
                                           int index = entry.key;
-                                          UserData user = entry.value;
+                                          UserModel user = entry.value;
                                           return DataRow(
                                             cells: [
                                               DataCell(
@@ -604,14 +771,14 @@ class _Body extends StatelessWidget {
                                               ),
                                               DataCell(
                                                 Text(
-                                                  user.gender ?? 'Unknown',
+                                                  user.gender,
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                 ),
                                               ),
                                               DataCell(
                                                 Text(
-                                                  user.phoneNumber ?? 'Unknown',
+                                                  user.role,
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                 ),
@@ -629,22 +796,25 @@ class _Body extends StatelessWidget {
                                                           context: context,
                                                           builder: (context) {
                                                             return EditUser(
+                                                              id: user.id,
                                                               username:
                                                                   user.username,
                                                               email: user.email,
-                                                              password:
-                                                                  'password',
+                                                              password: '',
                                                               phone:
                                                                   user.phoneNumber ??
                                                                   'Unknown',
                                                               gender:
-                                                                  user.gender ??
-                                                                  'Unknown',
+                                                                  user.gender,
                                                               profilePic:
                                                                   user.profilePic,
+                                                              role: user.role,
                                                             );
                                                           },
-                                                        );
+                                                        ).then((_) {
+                                                          // Refresh the user list after editing
+                                                          onRefresh();
+                                                        });
                                                       },
                                                     ),
                                                     IconNoBorder(
@@ -654,7 +824,92 @@ class _Body extends StatelessWidget {
                                                         showDialog(
                                                           context: context,
                                                           builder: (context) {
-                                                            return DeleteUser();
+                                                            return AlertDialog(
+                                                              backgroundColor:
+                                                                  AppColors
+                                                                      .cardView,
+                                                              title: Text(
+                                                                'Delete User',
+                                                                style: TextStyle(
+                                                                  color:
+                                                                      AppColors
+                                                                          .accent,
+                                                                ),
+                                                              ),
+                                                              content: Text(
+                                                                'Are you sure you want to delete this user?',
+                                                              ),
+                                                              actions: [
+                                                                TextButton(
+                                                                  onPressed:
+                                                                      () =>
+                                                                          Navigator.of(
+                                                                            context,
+                                                                          ).pop(),
+                                                                  child: Text(
+                                                                    'Cancel',
+                                                                  ),
+                                                                ),
+                                                                TextButton(
+                                                                  onPressed: () async {
+                                                                    try {
+                                                                      final userService = Provider.of<
+                                                                        UserService
+                                                                      >(
+                                                                        context,
+                                                                        listen:
+                                                                            false,
+                                                                      );
+                                                                      await userService
+                                                                          .deleteUser(
+                                                                            user.id,
+                                                                          );
+                                                                      Navigator.of(
+                                                                        context,
+                                                                      ).pop();
+                                                                      ScaffoldMessenger.of(
+                                                                        context,
+                                                                      ).showSnackBar(
+                                                                        customSnackBar(
+                                                                          'Success',
+                                                                          'User deleted successfully',
+                                                                          Icons
+                                                                              .check_circle_outline,
+                                                                          Colors
+                                                                              .green,
+                                                                        ),
+                                                                      );
+                                                                      // Refresh the user list
+                                                                      onRefresh();
+                                                                    } catch (
+                                                                      e
+                                                                    ) {
+                                                                      Navigator.of(
+                                                                        context,
+                                                                      ).pop();
+                                                                      ScaffoldMessenger.of(
+                                                                        context,
+                                                                      ).showSnackBar(
+                                                                        customSnackBar(
+                                                                          'Error',
+                                                                          e.toString().replaceAll(
+                                                                            'Exception: ',
+                                                                            '',
+                                                                          ),
+                                                                          Icons
+                                                                              .info_outline_rounded,
+                                                                          AppColors
+                                                                              .accent,
+                                                                        ),
+                                                                      );
+                                                                    }
+                                                                  },
+                                                                  child: Text(
+                                                                    'Delete',
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            );
                                                           },
                                                         );
                                                       },
@@ -667,13 +922,13 @@ class _Body extends StatelessWidget {
                                         }).toList(),
                                   ),
                                   // Pagination controls
-                                  if (allUsers.length > itemsPerPage)
+                                  if (totalPages > 1)
                                     PaginationControls(
                                       currentPage: currentPage,
                                       totalPages: totalPages,
                                       onPageChanged: onPageChanged,
                                       itemsPerPage: itemsPerPage,
-                                      totalItems: allUsers.length,
+                                      totalItems: totalUsers,
                                     ),
                                 ],
                               ),
@@ -686,29 +941,31 @@ class _Body extends StatelessWidget {
             // Chart container
             Expanded(
               flex: 2,
-              child: Container(
-                height: 600,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: AppColors.cardView,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        _PieChart(
-                          maleCount: maleCount,
-                          femaleCount: femaleCount,
-                          unknownCount: unknownCount,
-                        ),
-                        SizedBox(height: 12),
-                        _GenderCard(
-                          maleCount: maleCount,
-                          femaleCount: femaleCount,
-                          unknownCount: unknownCount,
-                        ),
-                      ],
+              child: SingleChildScrollView(
+                child: Container(
+                  height: 600,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.cardView,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          _PieChart(
+                            maleCount: maleCount,
+                            femaleCount: femaleCount,
+                            unknownCount: unknownCount,
+                          ),
+                          SizedBox(height: 12),
+                          _GenderCard(
+                            maleCount: maleCount,
+                            femaleCount: femaleCount,
+                            unknownCount: unknownCount,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -723,19 +980,30 @@ class _Body extends StatelessWidget {
 
 class _CardList extends StatelessWidget {
   const _CardList({
-    required this.users,
+    required this.totalUsers,
     required this.maleCount,
     required this.femaleCount,
     required this.unknownCount,
+    required this.adminCount,
+    required this.userCount,
+    required this.totalNonAdminUsers,
+    required this.filteredNonAdminUsers,
   });
 
-  final int users;
+  final int totalUsers;
   final int maleCount;
   final int femaleCount;
   final int unknownCount;
+  final int adminCount;
+  final int userCount;
+  final int totalNonAdminUsers;
+  final int filteredNonAdminUsers;
 
   @override
   Widget build(BuildContext context) {
+    // Calculate overall total unfiltered users
+    final overallTotalUnfilteredUsers = totalNonAdminUsers + adminCount;
+
     return SizedBox(
       height: 120,
       child: Center(
@@ -749,7 +1017,7 @@ class _CardList extends StatelessWidget {
               case 0:
                 return ProcessCard(
                   title: 'All',
-                  subtile: '$users Person${users != 1 ? 's' : ''}',
+                  subtile: '$totalUsers Person${totalUsers != 1 ? 's' : ''}',
                   icon: Icons.group,
                   value: 1,
                   color: AppColors.secondary,
@@ -757,17 +1025,24 @@ class _CardList extends StatelessWidget {
               case 1:
                 return ProcessCard(
                   title: 'Users',
-                  subtile: '${users - 1} Person${users != 2 ? 's' : ''}',
+                  subtile:
+                      '$totalNonAdminUsers Person${totalNonAdminUsers != 1 ? 's' : ''}',
                   icon: Icons.person_rounded,
-                  value: (users - 1) / users,
+                  value:
+                      overallTotalUnfilteredUsers > 0
+                          ? totalNonAdminUsers / overallTotalUnfilteredUsers
+                          : 0,
                   color: Colors.green,
                 );
               case 2:
                 return ProcessCard(
                   title: 'Admin',
-                  subtile: '1 Person',
+                  subtile: '$adminCount Person${adminCount != 1 ? 's' : ''}',
                   icon: Icons.admin_panel_settings_rounded,
-                  value: 1 / users,
+                  value:
+                      overallTotalUnfilteredUsers > 0
+                          ? adminCount / overallTotalUnfilteredUsers
+                          : 0,
                   color: Colors.deepOrange,
                 );
               default:

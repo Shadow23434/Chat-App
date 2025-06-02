@@ -6,7 +6,7 @@ class FetchChatsUseCase {
 
   FetchChatsUseCase(this.repository);
 
-  Future<List<ChatEntity>> call() async {
-    return repository.fetchChats();
+  Future<List<ChatEntity>> call(String userId) async {
+    return repository.getChats(userId);
   }
 }

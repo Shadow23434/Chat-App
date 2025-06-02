@@ -3,6 +3,9 @@ import 'package:chat_app/chat_app_ui/screens/profiles/own_profile_screen.dart';
 import 'package:chat_app/chat_app_ui/widgets/edit_avatar_dialog.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_state.dart';
 
 class EditProfile extends StatefulWidget {
   static Route get route =>
@@ -25,7 +28,19 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
-    _selectedGender = 'Male';
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthSuccess) {
+      _nameController.text = authState.user.username;
+      _phoneController.text = authState.user.phoneNumber ?? '';
+      _selectedGender = authState.user.gender ?? 'Unknown';
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    super.dispose();
   }
 
   Future<void> _confirm() async {
@@ -36,6 +51,7 @@ class _EditProfileState extends State<EditProfile> {
     if (_nameFormKey.currentState!.validate() &&
         _phoneFormKey.currentState!.validate()) {
       // Edit database
+      // TODO: Implement logic to update user data using a use case or directly through the repository
 
       await Navigator.of(context).pushReplacement(OwnProfileScreen.route);
     }
@@ -58,14 +74,22 @@ class _EditProfileState extends State<EditProfile> {
               ),
               // Avatar
               Center(
-                child: Avatar.large(
-                  url: defaultAvatarUrl,
-                  isEdited: true,
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return EditAvatarDialog();
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    String avatarUrl = defaultAvatarUrl;
+                    if (state is AuthSuccess) {
+                      avatarUrl = state.user.profilePic ?? defaultAvatarUrl;
+                    }
+                    return Avatar.large(
+                      url: avatarUrl,
+                      isEdited: true,
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return EditAvatarDialog();
+                          },
+                        );
                       },
                     );
                   },
@@ -81,7 +105,7 @@ class _EditProfileState extends State<EditProfile> {
                       controller: _nameController,
                       formKey: _nameFormKey,
                       showErrors: _showErrors,
-                      value: 'Puerto Rico',
+                      // value: 'Puerto Rico', // Remove hardcoded value
                     ),
                     SizedBox(height: 12),
                     // Gender
@@ -115,7 +139,7 @@ class _EditProfileState extends State<EditProfile> {
                       controller: _phoneController,
                       formKey: _phoneFormKey,
                       showErrors: _showErrors,
-                      value: '(320) 235-0504',
+                      // value: '(320) 235-0504', // Remove hardcoded value
                       isPhone: true,
                     ),
                   ],

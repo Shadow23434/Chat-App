@@ -1,5 +1,6 @@
 import 'package:chat_app/chat_app_ui/models/models.dart';
 import 'package:chat_app/chat_app_ui/screens/screens.dart';
+import 'package:chat_app/chat_app_ui/utils/helpers.dart';
 import 'package:chat_app/chat_app_ui/widgets/avatar.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +9,7 @@ class ContactsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<UserModel> demoUsers = users;
+    final List<UserModel> demoUsers = Helpers.users;
 
     return Scaffold(
       body: Column(

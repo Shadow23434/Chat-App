@@ -1,7 +1,9 @@
-import 'package:chat_app/admin_panel_ui/widget/widgets.dart';
+import 'package:chat_app/admin_panel_ui/services/index.dart';
+import 'package:chat_app/admin_panel_ui/widgets/widgets.dart';
 import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AdminLogInScreen extends StatefulWidget {
   static Route get route =>
@@ -18,18 +20,49 @@ class _AdminLogInScreenState extends State<AdminLogInScreen> {
   final GlobalKey<FormState> _nameFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _passwordFormKey = GlobalKey<FormState>();
   bool _showErrors = false;
+  bool _isLoading = false;
+  String? _errorMessage;
 
   Future<void> _logIn() async {
-    setState(() {
-      _showErrors = true;
-    });
-    if (_nameFormKey.currentState!.validate() &&
-        _passwordFormKey.currentState!.validate()) {
-      // Validate database
+    if (!_nameFormKey.currentState!.validate() ||
+        !_passwordFormKey.currentState!.validate()) {
+      setState(() {
+        _showErrors = true;
+      });
+      return;
+    }
 
-      await Future.delayed(Duration(milliseconds: 100));
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final success = await authService.login(
+        _usernameController.text.trim(),
+        _passwordController.text,
+      );
+
+      if (success && mounted) {
+        // Initialize auth information after successful login
+        await authService.initializeAuth();
+        // Then navigate
+        Navigator.of(context).pushReplacementNamed('/users');
+      }
+    } catch (e) {
       if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/user');
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          customSnackBar(
+            'Error',
+            e.toString().replaceAll('Exception: ', ''),
+            Icons.info_outline_rounded,
+            AppColors.accent,
+          ),
+        );
       }
     }
   }
@@ -70,8 +103,8 @@ class _AdminLogInScreenState extends State<AdminLogInScreen> {
                     SizedBox(height: 40),
                     // User Field
                     Input(
-                      lable: 'Username',
-                      icon: Icons.person_rounded,
+                      lable: 'Email',
+                      icon: Icons.email_rounded,
                       controller: _usernameController,
                       formkey: _nameFormKey,
                       showErrors: _showErrors,
@@ -86,10 +119,24 @@ class _AdminLogInScreenState extends State<AdminLogInScreen> {
                       formkey: _passwordFormKey,
                       showErrors: _showErrors,
                     ),
-                    SizedBox(height: 30),
+                    SizedBox(height: 10),
+
+                    // Error message
+                    if (_errorMessage != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          _errorMessage!,
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+
+                    SizedBox(height: 20),
 
                     // Log In Button
-                    ButtonBackground(onTap: _logIn, string: 'Login'),
+                    _isLoading
+                        ? CircularProgressIndicator()
+                        : ButtonBackground(onTap: _logIn, string: 'Login'),
                   ],
                 ),
               ),

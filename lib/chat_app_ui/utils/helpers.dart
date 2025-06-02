@@ -24,41 +24,6 @@ abstract class Helpers {
     return '$minutesStr:$secondsStr';
   }
 
-  // static String getChannelName(Channel channel, admin.User currentUser) {
-  //   if (channel.name != null) {
-  //     return channel.name!;
-  //   } else if (channel.state?.members.isNotEmpty ?? false) {
-  //     final otherMembers =
-  //         channel.state?.members
-  //             .where((element) => element.userId != currentUser.id)
-  //             .toList();
-  //     if (otherMembers?.length == 1) {
-  //       return otherMembers!.first.user?.name ?? 'Unknown';
-  //     } else {
-  //       return 'Multiple Users';
-  //     }
-  //   } else {
-  //     return 'No Channel Name';
-  //   }
-  // }
-
-  // static String? getChannelImage(Channel channel, admin.User currentUser) {
-  //   if (channel.image != null) {
-  //     return channel.image!;
-  //   } else if (channel.state?.members.isNotEmpty ?? false) {
-  //     final otherMembers =
-  //         channel.state?.members
-  //             .where((element) => element.userId != currentUser.id)
-  //             .toList();
-  //     if (otherMembers?.length == 1) {
-  //       return otherMembers!.first.user?.image;
-  //     }
-  //   } else {
-  //     return null;
-  //   }
-  //   return null;
-  // }
-
   static String? nameInputValidator(String? value) {
     if (value == null || value.isEmpty) {
       return 'Cannot be empty!';
@@ -86,6 +51,7 @@ abstract class Helpers {
     return null;
   }
 
+  static List<UserModel> users = [];
   static UserModel? getUserById(String userId) {
     try {
       return users.firstWhere((user) => user.id == userId);
