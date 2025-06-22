@@ -21,7 +21,12 @@ class HomeScreen extends StatelessWidget {
   final ValueNotifier<int> pageIndex = ValueNotifier(0);
   final ValueNotifier<String> title = ValueNotifier('Messages');
 
-  final pages = [ChatPage(), NotificationsPage(), CallsPage(), ContactsPage()];
+  final pages = [
+    ChatScreen(),
+    NotificationsPage(),
+    CallsPage(),
+    ContactsPage(),
+  ];
 
   final pageTitles = const ['Messages', 'Notifications', 'Calls', 'Contacts'];
 

@@ -1,7 +1,8 @@
-import 'package:chat_app/chat_app_ui/models/models.dart';
+import 'package:chat_app/chat_app_ui/features/auth/data/models/user_model.dart';
 import 'package:chat_app/chat_app_ui/screens/screens.dart';
 import 'package:chat_app/chat_app_ui/utils/helpers.dart';
 import 'package:chat_app/chat_app_ui/widgets/avatar.dart';
+import 'package:chat_app/core/models/user_model.dart' hide UserModel;
 import 'package:flutter/material.dart';
 
 class ContactsPage extends StatelessWidget {
@@ -9,7 +10,7 @@ class ContactsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<UserModel> demoUsers = Helpers.users;
+    final List<UserModel> demoUsers = Helpers.users.cast<UserModel>();
 
     return Scaffold(
       body: Column(

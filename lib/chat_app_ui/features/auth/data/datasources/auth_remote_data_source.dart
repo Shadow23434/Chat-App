@@ -3,14 +3,47 @@ import 'package:chat_app/chat_app_ui/features/auth/domain/entities/user_entity.d
 import 'package:http/http.dart' as http;
 import 'package:chat_app/core/config/index.dart';
 import 'package:chat_app/chat_app_ui/utils/app.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthRemoteDataSource {
   final String baseUrl;
   final http.Client client;
+  final FlutterSecureStorage _storage;
+  String? _authToken;
 
   AuthRemoteDataSource({http.Client? client})
     : baseUrl = '${Config.apiUrl}/auth',
-      client = client ?? http.Client();
+      client = client ?? http.Client(),
+      _storage = const FlutterSecureStorage() {
+    _loadToken();
+  }
+
+  Future<void> _loadToken() async {
+    _authToken = await _storage.read(key: 'auth_token');
+  }
+
+  Future<void> _saveToken(String token) async {
+    _authToken = token;
+    await _storage.write(key: 'auth_token', value: token);
+  }
+
+  Future<void> _clearToken() async {
+    _authToken = null;
+    await _storage.delete(key: 'auth_token');
+  }
+
+  Map<String, String> get _headers {
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    if (_authToken != null) {
+      headers['Authorization'] = 'Bearer $_authToken';
+    }
+
+    return headers;
+  }
 
   Future<UserEntity> login({
     required String email,
@@ -22,10 +55,7 @@ class AuthRemoteDataSource {
       final response = await client
           .post(
             Uri.parse(url),
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
+            headers: _headers,
             body: jsonEncode({'email': email, 'password': password}),
           )
           .timeout(
@@ -41,10 +71,12 @@ class AuthRemoteDataSource {
       final responseBody = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        return _createUserEntityFromJson(
+        final user = _createUserEntityFromJson(
           responseBody['info'],
           responseBody['token'],
         );
+        await _saveToken(responseBody['token']);
+        return user;
       } else {
         logger.e('Login failed: ${responseBody['message']}');
         throw Exception(responseBody['message'] ?? 'Login failed');
@@ -63,7 +95,7 @@ class AuthRemoteDataSource {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/register'),
-        headers: {'Content-Type': 'application/json'},
+        headers: _headers,
         body: jsonEncode({
           'username': username,
           'email': email,
@@ -75,10 +107,12 @@ class AuthRemoteDataSource {
 
       if (response.statusCode == 201) {
         logger.d('Registration successful: ${responseBody['user']}');
-        return _createUserEntityFromJson(
+        final user = _createUserEntityFromJson(
           responseBody['user'],
           responseBody['token'],
         );
+        await _saveToken(responseBody['token']);
+        return user;
       } else {
         logger.e('Registration failed: ${responseBody['message']}');
         throw Exception(responseBody['message'] ?? 'Registration failed');
@@ -93,13 +127,14 @@ class AuthRemoteDataSource {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/logout'),
-        headers: {'Content-Type': 'application/json'},
+        headers: _headers,
       );
       if (response.statusCode != 200) {
         final responseBody = jsonDecode(response.body);
         logger.e('Signout failed: ${responseBody['message']}');
         throw Exception(responseBody['message'] ?? 'Signout failed');
       }
+      await _clearToken();
       logger.d('Signout successful');
     } catch (e) {
       logger.e('Failed to logout: $e');
@@ -111,7 +146,7 @@ class AuthRemoteDataSource {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/verify-email'),
-        headers: {'Content-Type': 'application/json'},
+        headers: _headers,
         body: jsonEncode({'token': verificationToken}),
       );
 
@@ -119,10 +154,12 @@ class AuthRemoteDataSource {
 
       if (response.statusCode == 200) {
         logger.d('Email verification successful: ${responseBody['user']}');
-        return _createUserEntityFromJson(
+        final user = _createUserEntityFromJson(
           responseBody['user'],
           responseBody['token'],
         );
+        await _saveToken(responseBody['token']);
+        return user;
       } else {
         logger.e('Email verification failed: ${responseBody['message']}');
         throw Exception(responseBody['message'] ?? 'Email verification failed');
@@ -137,7 +174,7 @@ class AuthRemoteDataSource {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/forgot-password'),
-        headers: {'Content-Type': 'application/json'},
+        headers: _headers,
         body: jsonEncode({'email': email}),
       );
 
@@ -162,7 +199,7 @@ class AuthRemoteDataSource {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/reset-password'),
-        headers: {'Content-Type': 'application/json'},
+        headers: _headers,
         body: jsonEncode({'token': token, 'password': password}),
       );
 
@@ -170,10 +207,12 @@ class AuthRemoteDataSource {
 
       if (response.statusCode == 200) {
         logger.d('Password reset successful: ${responseBody['user']}');
-        return _createUserEntityFromJson(
+        final user = _createUserEntityFromJson(
           responseBody['user'],
           responseBody['token'],
         );
+        await _saveToken(responseBody['token']);
+        return user;
       } else {
         logger.e('Password reset failed: ${responseBody['message']}');
         throw Exception(responseBody['message'] ?? 'Password reset failed');

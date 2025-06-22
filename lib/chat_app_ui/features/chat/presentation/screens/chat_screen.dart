@@ -1,10 +1,10 @@
+import 'package:chat_app/chat_app_ui/features/auth/data/models/user_model.dart';
 import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_state.dart';
 import 'package:chat_app/chat_app_ui/features/chat/domain/entities/chat_entity.dart';
 import 'package:chat_app/chat_app_ui/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:chat_app/chat_app_ui/features/chat/presentation/bloc/chat_event.dart';
 import 'package:chat_app/chat_app_ui/features/chat/presentation/bloc/chat_state.dart';
-import 'package:chat_app/chat_app_ui/models/models.dart';
 import 'package:chat_app/chat_app_ui/screens/screens.dart';
 import 'package:chat_app/theme.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
@@ -12,14 +12,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jiffy/jiffy.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+class ChatScreen extends StatefulWidget {
+  const ChatScreen({super.key});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();

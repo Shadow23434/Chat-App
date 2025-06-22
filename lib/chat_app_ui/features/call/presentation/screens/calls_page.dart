@@ -1,5 +1,6 @@
 import 'dart:math';
-import 'package:chat_app/chat_app_ui/models/models.dart';
+import 'package:chat_app/chat_app_ui/features/auth/data/models/user_model.dart';
+import 'package:chat_app/chat_app_ui/features/call/data/models/call_model.dart';
 import 'package:chat_app/chat_app_ui/utils/helpers.dart';
 import 'package:chat_app/chat_app_ui/screens/screens.dart';
 import 'package:chat_app/theme.dart';
@@ -12,20 +13,18 @@ class CallsPage extends StatelessWidget {
   CallsPage({super.key});
 
   List<UserModel> users = Helpers.users;
-  List<Call> _generateSortedCallData() {
-    List<Call> calls = List.generate(
+  List<CallModel> _generateSortedCallData() {
+    List<CallModel> calls = List.generate(
       20,
-      (_) => Call(
+      (_) => CallModel(
         id: faker.faker.guid.guid(),
-        caller: Helpers.users[Random().nextInt(Helpers.users.length)],
-        receiver: users[Random().nextInt(users.length)],
+        participantId: users[Random().nextInt(users.length)].id,
+        participantName: users[Random().nextInt(users.length)].username,
+        participantProfilePic:
+            users[Random().nextInt(users.length)].profilePic ??
+            'https://via.placeholder.com/150',
         status: faker.faker.randomGenerator.boolean() ? 'missed' : 'received',
-        duration: faker.faker.randomGenerator.integer(60),
-        startedAt: DateTime.now().subtract(
-          Duration(minutes: faker.faker.randomGenerator.integer(60)),
-        ),
         endedAt: Helpers.randomDate(),
-        roomId: faker.faker.guid.guid(),
       ),
     );
 
@@ -41,7 +40,9 @@ class CallsPage extends StatelessWidget {
       slivers: [
         SliverList(
           delegate: SliverChildListDelegate(
-            sortedCalls.map((call) => _CallTitle(call: call)).toList(),
+            sortedCalls
+                .map((call) => _CallTitle(call: call, users: users))
+                .toList(),
           ),
         ),
       ],
@@ -50,8 +51,9 @@ class CallsPage extends StatelessWidget {
 }
 
 class _CallTitle extends StatelessWidget {
-  const _CallTitle({required this.call});
-  final Call call;
+  const _CallTitle({required this.call, required this.users});
+  final CallModel call;
+  final List<UserModel> users;
 
   @override
   Widget build(BuildContext context) {
@@ -59,17 +61,26 @@ class _CallTitle extends StatelessWidget {
       height: 100,
       margin: EdgeInsets.symmetric(horizontal: 8),
       child: InkWell(
-        onTap: () {},
+        onTap:
+            () => Navigator.of(context).push(
+              ProfileScreen.route(
+                users.firstWhere((user) => user.id == call.participantId),
+              ),
+            ),
         child: Row(
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Avatar.medium(
-                url: call.caller.profilePic,
+                url: call.participantProfilePic,
                 onTap:
-                    () => Navigator.of(
-                      context,
-                    ).push(ProfileScreen.route(call.caller)),
+                    () => Navigator.of(context).push(
+                      ProfileScreen.route(
+                        users.firstWhere(
+                          (user) => user.id == call.participantId,
+                        ),
+                      ),
+                    ),
               ),
             ),
             Expanded(
@@ -77,11 +88,10 @@ class _CallTitle extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Caller name
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      call.caller.username,
+                      call.participantName,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         letterSpacing: 0.2,
