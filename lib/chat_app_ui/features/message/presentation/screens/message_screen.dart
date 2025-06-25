@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:chat_app/chat_app_ui/features/message/domain/repositories/message_repository.dart';
 import 'package:chat_app/chat_app_ui/features/message/data/repositories/message_repository_impl.dart';
 import 'package:chat_app/chat_app_ui/features/message/data/datasources/message_remote_data_source.dart';
+import 'package:chat_app/chat_app_ui/features/video_call/presentation/screens/video_call_screen.dart';
 
 class MessageScreen extends StatefulWidget {
   static Route route(ChatEntity chatEntity) => MaterialPageRoute(
@@ -99,9 +100,26 @@ class _MessageScreenState extends State<MessageScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Center(
-                child: IconBorder(
-                  icon: CupertinoIcons.video_camera_solid,
-                  onTap: () {},
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state is AuthSuccess) {
+                      return IconBorder(
+                        icon: CupertinoIcons.video_camera_solid,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => VideoCallScreen(
+                                    roomName: widget.chatEntity.id,
+                                    identity: state.user.id,
+                                  ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
                 ),
               ),
             ),
