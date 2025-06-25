@@ -14,17 +14,17 @@ class MessageModel extends MessageEntity {
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json) {
-    final createdAtString = json['created_at'] as String?;
-    final updatedAtString = json['updated_at'] as String?;
+    final createdAtString = json['createdAt'] as String?;
+    final updatedAtString = json['updatedAt'] as String?;
 
     return MessageModel(
       id: json['_id'] as String? ?? '',
-      chatId: json['chat_id'] as String? ?? '',
-      senderId: json['sender_id'] as String? ?? '',
+      chatId: json['chatId'] as String? ?? '',
+      senderId: json['senderId'] as String? ?? '',
       content: json['content'] as String? ?? '',
       type: json['type'] as String? ?? 'text',
-      mediaUrl: json['media_url'] as String? ?? '',
-      isRead: json['is_read'] as bool? ?? false,
+      mediaUrl: json['mediaUrl'] as String? ?? '',
+      isRead: json['isRead'] as bool? ?? false,
       createdAt:
           createdAtString != null
               ? DateTime.parse(createdAtString)
@@ -37,14 +37,14 @@ class MessageModel extends MessageEntity {
   Map<String, dynamic> toJson() {
     return {
       '_id': id,
-      'chat_id': chatId,
-      'sender_id': senderId,
+      'chatId': chatId,
+      'senderId': senderId,
       'content': content,
       'type': type,
-      'media_url': mediaUrl,
-      'is_read': isRead,
-      'created_at': createdAt.toIso8601String(),
-      if (updatedAt != null) 'updated_at': updatedAt!.toIso8601String(),
+      'mediaUrl': mediaUrl,
+      'isRead': isRead,
+      'createdAt': createdAt.toIso8601String(),
+      if (updatedAt != null) 'updatedAt': updatedAt!.toIso8601String(),
     };
   }
 }

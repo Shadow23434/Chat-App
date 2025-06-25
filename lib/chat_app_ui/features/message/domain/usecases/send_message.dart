@@ -6,13 +6,13 @@ class SendMessageParams extends Equatable {
   final String chatId;
   final String content;
   final String type;
-  final String? mediaUrl;
+  final String mediaUrl;
 
   const SendMessageParams({
     required this.chatId,
     required this.content,
     required this.type,
-    this.mediaUrl,
+    required this.mediaUrl,
   });
 
   @override

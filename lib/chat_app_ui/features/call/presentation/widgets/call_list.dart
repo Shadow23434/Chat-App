@@ -1,5 +1,6 @@
 import 'package:chat_app/chat_app_ui/features/call/presentation/bloc/call_bloc.dart';
 import 'package:chat_app/chat_app_ui/features/call/presentation/widgets/call_item.dart';
+import 'package:chat_app/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,7 +12,9 @@ class CallList extends StatelessWidget {
     return BlocBuilder<CallBloc, CallState>(
       builder: (context, state) {
         if (state is CallLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.secondary),
+          );
         } else if (state is CallLoaded) {
           return ListView.builder(
             itemCount: state.calls.length,

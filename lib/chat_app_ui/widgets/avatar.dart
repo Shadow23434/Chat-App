@@ -2,26 +2,44 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/chat_app_ui/utils/app.dart';
 import 'package:chat_app/chat_app_ui/widgets/icon_buttons.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class Avatar extends StatelessWidget {
   const Avatar({
     super.key,
     this.url,
+    this.file,
     this.onTap,
     required this.radius,
     this.isEdited = false,
   });
 
-  const Avatar.small({super.key, this.url, this.onTap, this.isEdited = false})
-    : radius = 18;
+  const Avatar.small({
+    super.key,
+    this.url,
+    this.file,
+    this.onTap,
+    this.isEdited = false,
+  }) : radius = 18;
 
-  const Avatar.medium({super.key, this.url, this.onTap, this.isEdited = false})
-    : radius = 26;
+  const Avatar.medium({
+    super.key,
+    this.url,
+    this.file,
+    this.onTap,
+    this.isEdited = false,
+  }) : radius = 26;
 
-  const Avatar.large({super.key, this.url, this.onTap, this.isEdited = false})
-    : radius = 34;
+  const Avatar.large({
+    super.key,
+    this.url,
+    this.file,
+    this.onTap,
+    this.isEdited = false,
+  }) : radius = 34;
 
   final String? url;
+  final File? file;
   final VoidCallback? onTap;
   final double radius;
   final bool isEdited;
@@ -32,9 +50,17 @@ class Avatar extends StatelessWidget {
   }
 
   Widget _avatar(BuildContext context) {
+    // Handle empty or null URLs
+    final imageUrl = url?.isNotEmpty == true ? url : defaultAvatarUrl;
+
     return CircleAvatar(
       radius: radius,
-      backgroundImage: CachedNetworkImageProvider(url ?? defaultAvatarUrl),
+      backgroundImage:
+          file != null
+              ? FileImage(file!)
+              : (imageUrl?.isNotEmpty == true
+                  ? CachedNetworkImageProvider(imageUrl!) as ImageProvider
+                  : null),
       backgroundColor: Theme.of(context).cardColor,
       child:
           isEdited
@@ -47,7 +73,9 @@ class Avatar extends StatelessWidget {
                   circularBorder: true,
                 ),
               )
-              : null,
+              : (imageUrl?.isEmpty == true || imageUrl == null
+                  ? Icon(Icons.person, size: radius, color: Colors.grey)
+                  : null),
     );
   }
 }

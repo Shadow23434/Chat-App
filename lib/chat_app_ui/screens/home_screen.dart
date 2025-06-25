@@ -1,3 +1,6 @@
+import 'package:chat_app/chat_app_ui/features/contact/presentation/screens/contact_screen.dart';
+import 'package:chat_app/chat_app_ui/features/profile/presentation/screens/search_profile_screen.dart';
+import 'package:chat_app/chat_app_ui/features/story/presentation/screens/create_story_screen.dart';
 import 'package:chat_app/chat_app_ui/utils/app.dart';
 import 'package:chat_app/chat_app_ui/pages/pages.dart';
 import 'package:chat_app/chat_app_ui/screens/screens.dart';
@@ -12,61 +15,182 @@ import 'package:chat_app/chat_app_ui/features/chat/data/repositories/chat_reposi
 import 'package:chat_app/chat_app_ui/features/chat/data/datasources/chat_remote_data_source.dart';
 import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_state.dart';
+import 'package:chat_app/chat_app_ui/features/contact/presentation/bloc/contact_bloc.dart';
+import 'package:chat_app/chat_app_ui/features/contact/presentation/bloc/contact_event.dart';
+import 'package:chat_app/chat_app_ui/features/contact/data/repositories/contact_repository_impl.dart';
+import 'package:chat_app/chat_app_ui/features/contact/data/datasources/contact_remote_data_source.dart';
+import 'package:chat_app/chat_app_ui/features/contact/domain/usecases/get_contacts_use_case.dart';
+import 'package:chat_app/chat_app_ui/features/contact/domain/usecases/add_contact_use_case.dart';
+import 'package:chat_app/chat_app_ui/features/contact/domain/usecases/accept_contact_use_case.dart';
+import 'package:chat_app/chat_app_ui/features/contact/domain/usecases/delete_contact_use_case.dart';
+import 'package:chat_app/chat_app_ui/features/story/presentation/bloc/story_bloc.dart';
+import 'package:chat_app/chat_app_ui/features/story/presentation/bloc/story_event.dart';
+import 'package:chat_app/chat_app_ui/features/story/domain/usecases/get_stories_usecase.dart';
+import 'package:chat_app/chat_app_ui/features/story/domain/usecases/create_story_usecase.dart';
+import 'package:chat_app/chat_app_ui/features/story/domain/usecases/like_story_usecase.dart';
+import 'package:chat_app/chat_app_ui/features/story/domain/usecases/unlike_story_usecase.dart';
+import 'package:chat_app/chat_app_ui/features/story/domain/usecases/delete_story_usecase.dart';
+import 'package:chat_app/chat_app_ui/features/story/domain/usecases/get_own_stories_usecase.dart';
+import 'package:chat_app/chat_app_ui/features/story/data/repositories/story_repository_impl.dart';
+import 'package:chat_app/chat_app_ui/features/story/data/datasources/story_remote_data_source.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static Route get route =>
       MaterialPageRoute(builder: (context) => HomeScreen());
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
-  final ValueNotifier<int> pageIndex = ValueNotifier(0);
-  final ValueNotifier<String> title = ValueNotifier('Messages');
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
-  final pages = [
-    ChatScreen(),
-    NotificationsPage(),
-    CallsPage(),
-    ContactsPage(),
-  ];
+class _HomeScreenState extends State<HomeScreen> {
+  late final PageController _pageController;
+  int selectedIndex = 0;
+  String title = 'Messages';
 
   final pageTitles = const ['Messages', 'Notifications', 'Calls', 'Contacts'];
 
-  void _onNavigationItemSelected(index) {
-    title.value = pageTitles[index];
-    pageIndex.value = index;
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: selectedIndex);
+  }
+
+  void _onNavigationItemSelected(int index) {
+    setState(() {
+      selectedIndex = index;
+      title = pageTitles[index];
+    });
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.ease,
+    );
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      selectedIndex = index;
+      title = pageTitles[index];
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create:
-          (context) => ChatBloc(
-            getChatsUseCase: GetChatsUseCase(
-              repository: ChatRepositoryImpl(
-                remoteDataSource: ChatRemoteDataSourceImpl(),
+    // Get token from AuthBloc
+    final authState = context.watch<AuthBloc>().state;
+    String? token;
+    if (authState is AuthSuccess) {
+      token = authState.user.token;
+    }
+
+    if (token == null) {
+      // Nếu chưa đăng nhập, show loading
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.secondary),
+        ),
+      );
+    }
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create:
+              (context) => ChatBloc(
+                getChatsUseCase: GetChatsUseCase(
+                  repository: ChatRepositoryImpl(
+                    remoteDataSource: ChatRemoteDataSourceImpl(),
+                  ),
+                ),
               ),
-            ),
-          ),
+        ),
+        BlocProvider(
+          key: ValueKey(
+            token,
+          ), // Đảm bảo ContactBloc được tạo lại khi token đổi
+          create:
+              (_) => ContactBloc(
+                getContactsUseCase: GetContactsUseCase(
+                  repository: ContactRepositoryImpl(
+                    remoteDataSource: ContactRemoteDataSource(token: token),
+                  ),
+                ),
+                addContactUseCase: AddContactUseCase(
+                  repository: ContactRepositoryImpl(
+                    remoteDataSource: ContactRemoteDataSource(token: token),
+                  ),
+                ),
+                acceptContactUseCase: AcceptContactUseCase(
+                  repository: ContactRepositoryImpl(
+                    remoteDataSource: ContactRemoteDataSource(token: token),
+                  ),
+                ),
+                deleteContactUseCase: DeleteContactUseCase(
+                  repository: ContactRepositoryImpl(
+                    remoteDataSource: ContactRemoteDataSource(token: token),
+                  ),
+                ),
+              )..add(LoadContacts()),
+        ),
+        BlocProvider(
+          create:
+              (context) => StoryBloc(
+                getStoriesUseCase: GetStoriesUseCase(
+                  StoryRepositoryImpl(
+                    remoteDataSource: StoryRemoteDataSource(),
+                  ),
+                ),
+                getOwnStoriesUseCase: GetOwnStoriesUseCase(
+                  repository: StoryRepositoryImpl(
+                    remoteDataSource: StoryRemoteDataSource(),
+                  ),
+                ),
+                createStoryUseCase: CreateStoryUseCase(
+                  StoryRepositoryImpl(
+                    remoteDataSource: StoryRemoteDataSource(),
+                  ),
+                ),
+                likeStoryUseCase: LikeStoryUseCase(
+                  StoryRepositoryImpl(
+                    remoteDataSource: StoryRemoteDataSource(),
+                  ),
+                ),
+                unlikeStoryUseCase: UnlikeStoryUseCase(
+                  StoryRepositoryImpl(
+                    remoteDataSource: StoryRemoteDataSource(),
+                  ),
+                ),
+                deleteStoryUseCase: DeleteStoryUseCase(
+                  StoryRepositoryImpl(
+                    remoteDataSource: StoryRemoteDataSource(),
+                  ),
+                ),
+              )..add(GetStories()),
+        ),
+      ],
       child: Scaffold(
         appBar: AppBar(
           iconTheme: Theme.of(context).iconTheme,
-          title: ValueListenableBuilder(
-            valueListenable: title,
-            builder: (BuildContext context, String value, _) {
-              return Center(
-                child: Text(
-                  value,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              );
-            },
+          title: Center(
+            child: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
           leadingWidth: 54,
           leading: Align(
             alignment: Alignment.centerRight,
-            child: IconBackGround(icon: Icons.search, onTap: () {}),
+            child: IconBackGround(
+              icon: Icons.search,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const SearchProfileScreen(),
+                  ),
+                );
+              },
+            ),
           ),
           actions: [
             Padding(
@@ -88,37 +212,36 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-        body: ValueListenableBuilder(
-          valueListenable: pageIndex,
-          builder: (BuildContext context, int value, _) {
-            return pages[value];
-          },
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: _onPageChanged,
+          children: [
+            ChatScreen(),
+            NotificationsPage(),
+            CallScreen(),
+            ContactScreen(),
+          ],
         ),
-        bottomNavigationBar: __BottomNavigationBar(
+        bottomNavigationBar: _CustomBottomNavigationBar(
           onItemSelected: _onNavigationItemSelected,
+          selectedIndex: selectedIndex,
         ),
       ),
     );
   }
 }
 
-class __BottomNavigationBar extends StatefulWidget {
-  const __BottomNavigationBar({required this.onItemSelected});
+class _CustomBottomNavigationBar extends StatelessWidget {
+  const _CustomBottomNavigationBar({
+    required this.onItemSelected,
+    required this.selectedIndex,
+  });
 
   final ValueChanged<int> onItemSelected;
-
-  @override
-  State<__BottomNavigationBar> createState() => _BottomNavigationBarState();
-}
-
-class _BottomNavigationBarState extends State<__BottomNavigationBar> {
-  var selectedIndex = 0;
+  final int selectedIndex;
 
   void handleItemSelected(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
-    widget.onItemSelected(index);
+    onItemSelected(index);
   }
 
   @override
@@ -153,7 +276,9 @@ class _BottomNavigationBarState extends State<__BottomNavigationBar> {
               GlowingActionButton(
                 color: AppColors.secondary,
                 icon: CupertinoIcons.add,
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(CreateStoryScreen.route());
+                },
               ),
               _NavigationBarItem(
                 index: 2,

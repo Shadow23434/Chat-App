@@ -1,8 +1,11 @@
+import 'package:chat_app/chat_app_ui/features/contact/presentation/bloc/contact_bloc.dart';
 import 'package:chat_app/chat_app_ui/features/message/domain/usecases/get_messages.dart';
 import 'package:chat_app/chat_app_ui/features/message/presentation/bloc/message_bloc.dart';
 import 'package:chat_app/chat_app_ui/features/message/presentation/widgets/message_input.dart';
 import 'package:chat_app/chat_app_ui/features/message/presentation/widgets/message_list.dart';
+import 'package:chat_app/chat_app_ui/screens/screens.dart';
 import 'package:chat_app/chat_app_ui/widgets/widgets.dart';
+import 'package:chat_app/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_app/chat_app_ui/features/auth/presentation/bloc/auth_bloc.dart';
@@ -14,14 +17,34 @@ import 'package:chat_app/chat_app_ui/features/message/domain/repositories/messag
 import 'package:chat_app/chat_app_ui/features/message/data/repositories/message_repository_impl.dart';
 import 'package:chat_app/chat_app_ui/features/message/data/datasources/message_remote_data_source.dart';
 
-class MessageScreen extends StatelessWidget {
+class MessageScreen extends StatefulWidget {
   static Route route(ChatEntity chatEntity) => MaterialPageRoute(
     builder: (context) => MessageScreen(chatEntity: chatEntity),
   );
 
-  const MessageScreen({super.key, required this.chatEntity});
+  static Route routeWithContactBloc(
+    ChatEntity chatEntity,
+    BuildContext parentContext,
+  ) => MaterialPageRoute(
+    builder:
+        (context) => BlocProvider.value(
+          value: parentContext.read<ContactBloc>(),
+          child: MessageScreen(chatEntity: chatEntity),
+        ),
+  );
 
+  const MessageScreen({super.key, required this.chatEntity});
   final ChatEntity chatEntity;
+
+  @override
+  State<MessageScreen> createState() => _MessageScreenState();
+}
+
+class _MessageScreenState extends State<MessageScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +64,10 @@ class MessageScreen extends StatelessWidget {
         ),
         BlocProvider(
           create:
-              (context) =>
-                  MessageBloc(getMessages: context.read<GetMessages>())
-                    ..add(GetMessagesEvent(chatId: chatEntity.id)),
+              (context) => MessageBloc(
+                getMessages: context.read<GetMessages>(),
+                repository: context.read<MessageRepository>(),
+              )..add(GetMessagesEvent(chatId: widget.chatEntity.id)),
         ),
       ],
       child: Scaffold(
@@ -65,10 +89,7 @@ class MessageScreen extends StatelessWidget {
           title: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
               if (state is AuthSuccess) {
-                return _AppBarTitle(
-                  participantName: chatEntity.participantName,
-                  onlineStatus: 'Offline',
-                );
+                return _AppBarTitle(chatEntity: widget.chatEntity);
               } else {
                 return const Text('Loading...');
               }
@@ -101,9 +122,27 @@ class MessageScreen extends StatelessWidget {
               child: BlocBuilder<MessageBloc, MessageState>(
                 builder: (context, state) {
                   if (state is MessageLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.secondary,
+                      ),
+                    );
                   } else if (state is MessageLoaded) {
-                    return MessageList(messages: state.messages);
+                    if (state.messages.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No messages yet.',
+                          style: TextStyle(
+                            color: Theme.of(context).hintColor,
+                            fontSize: 16,
+                          ),
+                        ),
+                      );
+                    }
+                    return MessageList(
+                      messages: state.messages,
+                      chatEntity: widget.chatEntity,
+                    );
                   } else if (state is MessageError) {
                     return Center(
                       child: Column(
@@ -126,10 +165,10 @@ class MessageScreen extends StatelessWidget {
                           ElevatedButton(
                             onPressed: () {
                               context.read<MessageBloc>().add(
-                                GetMessagesEvent(chatId: chatEntity.id),
+                                GetMessagesEvent(chatId: widget.chatEntity.id),
                               );
                             },
-                            child: const Text('Thử lại'),
+                            child: const Text('Try again'),
                           ),
                         ],
                       ),
@@ -139,7 +178,7 @@ class MessageScreen extends StatelessWidget {
                 },
               ),
             ),
-            MessageInput(chatId: chatEntity.id),
+            MessageInput(chatId: widget.chatEntity.id),
           ],
         ),
       ),
@@ -148,27 +187,86 @@ class MessageScreen extends StatelessWidget {
 }
 
 class _AppBarTitle extends StatelessWidget {
-  const _AppBarTitle({
-    required this.participantName,
-    required this.onlineStatus,
-  });
+  const _AppBarTitle({required this.chatEntity});
 
-  final String participantName;
-  final String onlineStatus;
+  final ChatEntity chatEntity;
+
+  bool _isOnline(DateTime? lastLogin) {
+    if (lastLogin == null) return false;
+    final now = DateTime.now();
+    return now.difference(lastLogin).inMinutes < 2;
+  }
+
+  String _lastSeenText(DateTime? lastLogin) {
+    if (lastLogin == null) return 'Offline';
+    final now = DateTime.now();
+    final diff = now.difference(lastLogin);
+    if (diff.inMinutes < 2) return 'Online';
+    if (diff.inMinutes < 60) return 'Last login ${diff.inMinutes} min ago';
+    if (diff.inHours < 24) return 'Last login ${diff.inHours} hr ago';
+    return 'Last login on ${lastLogin.day}/${lastLogin.month}/${lastLogin.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final lastLogin = chatEntity.participantLastLogin;
+    final isOnline = _isOnline(lastLogin);
+
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          participantName,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        Avatar.small(
+          url: chatEntity.participantProfilePic,
+          onTap:
+              () => Navigator.of(context).push(
+                ProfileScreen.routeWithBloc(
+                  chatEntity.participantId,
+                  contactBloc: context.read<ContactBloc>(),
+                ),
+              ),
         ),
-        Text(
-          onlineStatus,
-          style: const TextStyle(fontSize: 12, color: Colors.green),
+        const SizedBox(width: 8),
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder:
+                    (context) => AlertDialog(
+                      title: Text(chatEntity.participantName),
+                      content: Text(_lastSeenText(lastLogin)),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Close'),
+                        ),
+                      ],
+                    ),
+              );
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  chatEntity.participantName,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  _lastSeenText(lastLogin),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isOnline ? Colors.green : AppColors.textFaded,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );

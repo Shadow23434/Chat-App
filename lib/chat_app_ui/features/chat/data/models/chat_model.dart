@@ -6,10 +6,12 @@ class ChatModel extends ChatEntity {
     required super.participantId,
     required super.participantName,
     required super.participantProfilePic,
+    required super.participantLastLogin,
     required super.lastMessage,
     super.lastMessageAt,
     required super.isRead,
     required super.createdAt,
+    required super.lastMessageSenderId,
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class ChatModel extends ChatEntity {
       participantId: json['participant_id'] as String? ?? '',
       participantName: json['participant_name'] as String? ?? '',
       participantProfilePic: json['participant_profile_pic'] as String? ?? '',
+      participantLastLogin: json['participant_last_login'],
       lastMessage: json['last_message'] as String? ?? '',
       lastMessageAt:
           json['last_message_at'] != null
@@ -30,6 +33,7 @@ class ChatModel extends ChatEntity {
           createdAtString != null
               ? DateTime.parse(createdAtString)
               : DateTime.now(),
+      lastMessageSenderId: json['last_message_sender_id'] as String? ?? '',
     );
   }
 }

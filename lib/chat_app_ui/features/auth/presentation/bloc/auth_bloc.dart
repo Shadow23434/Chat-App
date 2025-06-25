@@ -1,3 +1,4 @@
+import 'package:chat_app/chat_app_ui/features/auth/data/models/user_model.dart';
 import 'package:chat_app/chat_app_ui/features/auth/domain/usercases/forgot_password_use_case.dart';
 import 'package:chat_app/chat_app_ui/features/auth/domain/usercases/reset_password_use_case.dart';
 import 'package:chat_app/chat_app_ui/features/auth/domain/usercases/verify_email_use_case.dart';
@@ -36,6 +37,33 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ForgotPasswordEvent>(_onForgotPassword);
     on<VerifyResetTokenEvent>(_onVerifyResetToken);
     on<ResetPasswordEvent>(_onResetPassword);
+    on<UpdateUserEvent>((event, emit) {
+      final currentState = state;
+      if (currentState is AuthSuccess) {
+        final oldUser = currentState.user;
+        final updatedUser =
+            (oldUser is UserModel)
+                ? oldUser.copyWith(
+                  username: event.user.username,
+                  email: event.user.email,
+                  gender: event.user.gender,
+                  phoneNumber: event.user.phoneNumber,
+                  profilePic: event.user.profilePic,
+                )
+                : UserModel(
+                  id: oldUser.id,
+                  username: event.user.username ?? oldUser.username,
+                  email: event.user.email ?? oldUser.email,
+                  password: oldUser.password,
+                  gender: event.user.gender ?? oldUser.gender,
+                  phoneNumber: event.user.phoneNumber ?? oldUser.phoneNumber,
+                  profilePic: event.user.profilePic ?? oldUser.profilePic,
+                  lastLogin: oldUser.lastLogin,
+                  token: oldUser.token,
+                );
+        emit(AuthSuccess(message: 'Profile updated', user: updatedUser));
+      }
+    });
   }
 
   Future<void> _onRegister(RegisterEvent event, Emitter<AuthState> emit) async {

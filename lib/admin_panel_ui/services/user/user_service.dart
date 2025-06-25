@@ -25,10 +25,12 @@ class UserService extends BaseService with ChangeNotifier {
     try {
       // Log request details for debugging
       if (kDebugMode) {
-        print('Making request to: ${dio.options.baseUrl}/users');
+        print('Making request to: \\${dio.options.baseUrl}/users');
         print(
           'Query parameters: page=$page, limit=$limit, search=$search, sort=$sort, sortField=$sortField',
         );
+        print('Headers sent: \\${dio.options.headers}');
+        print('Dio baseUrl: \\${dio.options.baseUrl}');
       }
 
       final response = await dio.get(

@@ -34,3 +34,10 @@ class MarkMessageAsReadEvent extends MessageEvent {
   @override
   List<Object> get props => [messageId];
 }
+
+class AddMessageEvent extends MessageEvent {
+  final MessageModel message;
+  const AddMessageEvent({required this.message});
+  @override
+  List<Object> get props => [message];
+}

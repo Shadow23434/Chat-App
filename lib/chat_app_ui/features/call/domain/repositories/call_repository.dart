@@ -1,7 +1,9 @@
-import 'package:chat_app/chat_app_ui/core/error/failures.dart';
-import 'package:chat_app/chat_app_ui/features/call/data/models/call_model.dart';
-import 'package:dartz/dartz.dart';
+import 'package:chat_app/chat_app_ui/features/call/domain/entities/call.dart';
 
 abstract class CallRepository {
-  Future<Either<Failure, List<CallModel>>> getCalls();
+  Future<List<CallEntity>> getCalls();
+  Future<CallEntity> createCall(String participantId, String callType);
+  Future<void> endCall(String callId, String status);
+  Future<void> answerCall(String callId);
+  Future<void> declineCall(String callId);
 }

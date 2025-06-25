@@ -1,5 +1,6 @@
 import 'package:chat_app/chat_app_ui/features/message/data/models/message_model.dart';
 import 'package:chat_app/chat_app_ui/features/message/domain/usecases/get_messages.dart';
+import 'package:chat_app/chat_app_ui/features/message/domain/repositories/message_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -38,6 +39,15 @@ class MarkMessageAsReadEvent extends MessageEvent {
   List<Object> get props => [messageId];
 }
 
+class AddMessageEvent extends MessageEvent {
+  final MessageModel message;
+
+  const AddMessageEvent({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}
+
 // States
 abstract class MessageState extends Equatable {
   const MessageState();
@@ -71,11 +81,14 @@ class MessageError extends MessageState {
 // Bloc
 class MessageBloc extends Bloc<MessageEvent, MessageState> {
   final GetMessages getMessages;
+  final MessageRepository repository;
 
-  MessageBloc({required this.getMessages}) : super(MessageInitial()) {
+  MessageBloc({required this.getMessages, required this.repository})
+    : super(MessageInitial()) {
     on<GetMessagesEvent>(_onGetMessages);
     on<SendMessageEvent>(_onSendMessage);
     on<MarkMessageAsReadEvent>(_onMarkMessageAsRead);
+    on<AddMessageEvent>(_onAddMessage);
   }
 
   Future<void> _onGetMessages(
@@ -95,7 +108,19 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     SendMessageEvent event,
     Emitter<MessageState> emit,
   ) async {
-    // TODO: Implement send message
+    try {
+      await repository.sendMessage(
+        chatId: event.message.chatId,
+        content: event.message.content,
+        type: event.message.type,
+        mediaUrl: event.message.mediaUrl,
+      );
+      // Reload messages after sending
+      final messages = await repository.getMessages(event.message.chatId);
+      emit(MessageLoaded(messages: messages));
+    } catch (e) {
+      emit(MessageError(message: 'Failed to send message'));
+    }
   }
 
   Future<void> _onMarkMessageAsRead(
@@ -103,5 +128,15 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     Emitter<MessageState> emit,
   ) async {
     // TODO: Implement mark message as read
+  }
+
+  void _onAddMessage(AddMessageEvent event, Emitter<MessageState> emit) {
+    if (state is MessageLoaded) {
+      final currentMessages = List<MessageModel>.from(
+        (state as MessageLoaded).messages,
+      );
+      currentMessages.insert(0, event.message);
+      emit(MessageLoaded(messages: currentMessages));
+    }
   }
 }

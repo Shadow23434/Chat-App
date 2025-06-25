@@ -6,6 +6,6 @@ abstract class MessageRepository {
     required String chatId,
     required String content,
     required String type,
-    String? mediaUrl,
+    required String mediaUrl,
   });
 }

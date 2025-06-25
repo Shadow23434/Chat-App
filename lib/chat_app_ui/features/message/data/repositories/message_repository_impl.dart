@@ -21,7 +21,7 @@ class MessageRepositoryImpl implements MessageRepository {
     required String chatId,
     required String content,
     required String type,
-    String? mediaUrl,
+    required String mediaUrl,
   }) async {
     try {
       return await remoteDataSource.sendMessage(

@@ -24,36 +24,32 @@ class UserModel {
       throw Exception('Empty JSON data provided to UserModel.fromJson');
     }
 
-    // Handle MongoDB ObjectId format or regular string format
-    String userId;
+    // Handle MongoDB ObjectId format or regular string/number format
+    String userId = '';
     if (json['_id'] is Map && json['_id'].containsKey('\$oid')) {
-      userId = json['_id']['\$oid'];
-    } else if (json['_id'] is String) {
-      userId = json['_id'];
-    } else if (json['id'] is String) {
-      userId = json['id'];
+      userId = json['_id']['\$oid'].toString();
+    } else if (json['_id'] != null) {
+      userId = json['_id'].toString();
+    } else if (json['id'] != null) {
+      userId = json['id'].toString();
     } else {
-      userId = json['_id']?.toString() ?? '';
-    }
-
-    if (userId.isEmpty) {
-      throw Exception('Invalid user ID in UserModel.fromJson');
+      userId = 'unknown';
     }
 
     return UserModel(
       id: userId,
-      username: json['username'].toString(),
-      email: json['email'].toString(),
-      gender: json['gender'].toString(),
-      phoneNumber: json['phoneNumber']?.toString() ?? 'Unknown',
-      profilePic: json['profilePic'].toString(),
-      role: json['role'].toString(),
+      username: json['username']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      gender: json['gender']?.toString() ?? 'unknown',
+      phoneNumber: json['phoneNumber']?.toString(),
+      profilePic: json['profilePic']?.toString() ?? '',
+      role: json['role']?.toString() ?? '',
       lastLogin:
           json['lastLogin'] != null
-              ? DateTime.parse(
+              ? DateTime.tryParse(
                 json['lastLogin'] is String
                     ? json['lastLogin']
-                    : json['lastLogin']['\$date'],
+                    : (json['lastLogin']?['\$date']?.toString() ?? ''),
               )
               : null,
     );

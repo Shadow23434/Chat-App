@@ -45,3 +45,8 @@ class ResetPasswordEvent extends AuthEvent {
   final String newPassword;
   ResetPasswordEvent({required this.token, required this.newPassword});
 }
+
+class UpdateUserEvent extends AuthEvent {
+  final dynamic user;
+  UpdateUserEvent(this.user);
+}

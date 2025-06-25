@@ -11,7 +11,7 @@ abstract class MessageRemoteDataSource {
     required String chatId,
     required String content,
     required String type,
-    String? mediaUrl,
+    required String mediaUrl,
   });
 }
 
@@ -75,9 +75,9 @@ class MessageRemoteDataSourceImpl implements MessageRemoteDataSource {
       }
 
       final url = '$baseUrl/messages/get/$chatId';
-      logger.d('Base URL: $baseUrl');
+      logger.d('URL: $url');
 
-      final response = await UniServices.dio.get(
+      final response = await UniServices.dio.post(
         url,
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
@@ -96,8 +96,7 @@ class MessageRemoteDataSourceImpl implements MessageRemoteDataSource {
         );
       }
 
-      final List<dynamic> messagesJson = response.data;
-      logger.d('Received ${messagesJson.length} messages');
+      final List<dynamic> messagesJson = response.data['messages'];
 
       return messagesJson.map((json) => MessageModel.fromJson(json)).toList();
     } on DioException catch (e) {
@@ -115,7 +114,7 @@ class MessageRemoteDataSourceImpl implements MessageRemoteDataSource {
     required String chatId,
     required String content,
     required String type,
-    String? mediaUrl,
+    required String mediaUrl,
   }) async {
     try {
       final token = await _storage.read(key: 'token');
@@ -126,8 +125,9 @@ class MessageRemoteDataSourceImpl implements MessageRemoteDataSource {
       final url = '$baseUrl/messages/save';
       logger.d('Sending message to URL: $url');
       logger.d('Chat ID: $chatId');
-      logger.d('Content: $content');
       logger.d('Type: $type');
+      logger.d('Content: $content');
+      logger.d('Media Url: $mediaUrl');
 
       final response = await UniServices.dio.post(
         url,
@@ -136,10 +136,10 @@ class MessageRemoteDataSourceImpl implements MessageRemoteDataSource {
           validateStatus: (status) => status! < 500,
         ),
         data: {
-          'chat_id': chatId,
-          'content': content,
+          'chatId': chatId,
           'type': type,
-          if (mediaUrl != null) 'media_url': mediaUrl,
+          'content': content,
+          'mediaUrl': mediaUrl,
         },
       );
 
