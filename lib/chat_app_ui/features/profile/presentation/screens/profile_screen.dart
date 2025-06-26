@@ -29,6 +29,7 @@ import 'package:chat_app/chat_app_ui/features/contact/domain/usecases/accept_con
 import 'package:chat_app/chat_app_ui/features/contact/domain/usecases/delete_contact_use_case.dart';
 import 'package:chat_app/chat_app_ui/features/chat/domain/entities/chat_entity.dart';
 import 'package:collection/collection.dart';
+import 'package:chat_app/chat_app_ui/features/video_call/presentation/screens/video_call_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   static Route route(String userId) =>
@@ -254,7 +255,24 @@ class __ButtonRowState extends State<_ButtonRow> {
             opacity: widget.user.contactStatus == 'accepted' ? 1.0 : 0.4,
             child: IconBackGround(
               icon: CupertinoIcons.video_camera,
-              onTap: widget.user.contactStatus == 'accepted' ? () {} : null,
+              onTap:
+                  widget.user.contactStatus == 'accepted'
+                      ? () async {
+                        final authState = context.read<AuthBloc>().state;
+                        if (authState is AuthSuccess) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => VideoCallScreen(
+                                    roomName: widget.user.id,
+                                    identity: authState.user.id,
+                                    cameraOff: false,
+                                  ),
+                            ),
+                          );
+                        }
+                      }
+                      : null,
               size: 24,
               circularBorder: true,
             ),
@@ -264,7 +282,24 @@ class __ButtonRowState extends State<_ButtonRow> {
             opacity: widget.user.contactStatus == 'accepted' ? 1.0 : 0.4,
             child: IconBackGround(
               icon: CupertinoIcons.phone,
-              onTap: widget.user.contactStatus == 'accepted' ? () {} : null,
+              onTap:
+                  widget.user.contactStatus == 'accepted'
+                      ? () {
+                        final authState = context.read<AuthBloc>().state;
+                        if (authState is AuthSuccess) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => VideoCallScreen(
+                                    roomName: widget.user.id,
+                                    identity: authState.user.id,
+                                    cameraOff: true,
+                                  ),
+                            ),
+                          );
+                        }
+                      }
+                      : null,
               circularBorder: true,
             ),
           ),

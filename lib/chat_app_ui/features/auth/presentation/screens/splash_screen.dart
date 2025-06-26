@@ -20,8 +20,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _handleAuthenticatedState() async {
     // auth
-    await Future.delayed(const Duration(milliseconds: 700));
-    Navigator.pushNamed(context, '/login');
+    await Future.delayed(const Duration(milliseconds: 1000));
+    Navigator.pushReplacementNamed(context, '/login');
   }
 
   @override

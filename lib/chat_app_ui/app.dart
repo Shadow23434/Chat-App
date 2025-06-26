@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
               switch (path) {
                 case '/':
                   return MaterialPageRoute(
-                    builder: (_) => const LogInScreen(),
+                    builder: (_) => SplashScreen(),
                     settings: settings,
                   );
                 case '/signup':
@@ -89,7 +89,7 @@ class MyApp extends StatelessWidget {
                     settings: settings,
                   );
                 case '/reset-password':
-                  // Lấy token từ path hoặc arguments
+                  // Get the token from arguments if available
                   String token = '';
                   if (settings.arguments != null &&
                       settings.arguments is String) {
@@ -99,7 +99,12 @@ class MyApp extends StatelessWidget {
                     builder: (_) => ResetPasswordTokenScreen(token: token),
                     settings: settings,
                   );
-                // Xử lý deep link dạng /reset-password/<token>
+                case '/login':
+                  return MaterialPageRoute(
+                    builder: (_) => const LogInScreen(),
+                    settings: settings,
+                  );
+                // Handle other routes
                 default:
                   if (path.startsWith('/reset-password/')) {
                     String token = '';

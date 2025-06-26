@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image/image.dart' as img;
 import 'package:http/http.dart' as http;
+import 'package:video_player/video_player.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class StoryScreen extends StatefulWidget {
   static Route route() =>
@@ -752,6 +754,11 @@ class _StoryContentState extends State<_StoryContent>
   String? _replyingToCommentId;
   final TextEditingController _replyController = TextEditingController();
 
+  VideoPlayerController? _videoController;
+  AudioPlayer? _audioPlayer;
+  bool _isAudioPlaying = false;
+  bool _isVideoInitialized = false;
+
   @override
   void initState() {
     super.initState();
@@ -802,6 +809,18 @@ class _StoryContentState extends State<_StoryContent>
         widget.story.mediaUrl != null &&
         widget.story.mediaUrl!.isNotEmpty) {
       _calculateImageBrightness();
+    } else if (widget.story.type == 'video' && widget.story.mediaUrl != null && widget.story.mediaUrl!.isNotEmpty) {
+      _videoController = VideoPlayerController.network(widget.story.mediaUrl!)
+        ..initialize().then((_) {
+          setState(() {
+            _isVideoInitialized = true;
+          });
+          _videoController?.play();
+        });
+    } else if (widget.story.type == 'audio' && widget.story.mediaUrl != null && widget.story.mediaUrl!.isNotEmpty) {
+      _audioPlayer = AudioPlayer();
+      _audioPlayer!.play(UrlSource(widget.story.mediaUrl!));
+      _isAudioPlaying = true;
     }
   }
 
@@ -868,6 +887,8 @@ class _StoryContentState extends State<_StoryContent>
     _commentController.dispose();
     _shareController.dispose();
     _likeController.dispose();
+    _videoController?.dispose();
+    _audioPlayer?.dispose();
     super.dispose();
   }
 
@@ -999,6 +1020,26 @@ class _StoryContentState extends State<_StoryContent>
 
   @override
   Widget build(BuildContext context) {
+    Widget backgroundWidget;
+    if (widget.story.type == 'video' && _videoController != null && _isVideoInitialized) {
+      backgroundWidget = Center(
+        child: AspectRatio(
+          aspectRatio: _videoController!.value.aspectRatio,
+          child: VideoPlayer(_videoController!),
+        ),
+      );
+    } else {
+      backgroundWidget = Container(
+        decoration: BoxDecoration(image: _getBackgroundDecoration()),
+        child: _getBackgroundDecoration() == null
+            ? Container(
+                color: Colors.grey[300],
+                child: const Center(child: Text('No Image Available')),
+              )
+            : null,
+      );
+    }
+
     // Use user info from story if available, otherwise fallback to Helpers
     final storyUser = widget.story.user;
     final fallbackUser =
@@ -1014,17 +1055,8 @@ class _StoryContentState extends State<_StoryContent>
 
     return Stack(
       children: [
-        // Background Image
-        Container(
-          decoration: BoxDecoration(image: _getBackgroundDecoration()),
-          child:
-              _getBackgroundDecoration() == null
-                  ? Container(
-                    color: Colors.grey[300],
-                    child: const Center(child: Text('No Image Available')),
-                  )
-                  : null,
-        ),
+        // Background or video
+        backgroundWidget,
         // Content
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 32),
@@ -1282,19 +1314,18 @@ class _StoryContentState extends State<_StoryContent>
                 children: [
                   widget.comments.isEmpty
                       ? const Center(
-                        child: Text(
-                          'No comments yet',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      )
+                          child: Text(
+                            'No comments yet',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )
                       : ListView(
-                        padding: const EdgeInsets.all(8),
-                        children:
-                            widget.comments
-                                .where((c) => c.parentCommentId == null)
-                                .map((comment) => _buildComment(comment))
-                                .toList(),
-                      ),
+                          padding: const EdgeInsets.all(8),
+                          children: widget.comments
+                              .where((c) => c.parentCommentId == null)
+                              .map((comment) => _buildComment(comment))
+                              .toList(),
+                        ),
                   // Close comment container
                   Positioned(
                     top: 8,

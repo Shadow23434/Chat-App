@@ -112,6 +112,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                   (_) => VideoCallScreen(
                                     roomName: widget.chatEntity.id,
                                     identity: state.user.id,
+                                    cameraOff: false,
                                   ),
                             ),
                           );
@@ -126,9 +127,27 @@ class _MessageScreenState extends State<MessageScreen> {
             Padding(
               padding: const EdgeInsets.only(right: 20),
               child: Center(
-                child: IconBorder(
-                  icon: CupertinoIcons.phone_solid,
-                  onTap: () {},
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state is AuthSuccess) {
+                      return IconBorder(
+                        icon: CupertinoIcons.phone_solid,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => VideoCallScreen(
+                                    roomName: widget.chatEntity.id,
+                                    identity: state.user.id,
+                                    cameraOff: true,
+                                  ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
                 ),
               ),
             ),
